@@ -3,9 +3,9 @@ import { Dimensions, StyleSheet, View } from "react-native";
 
 const {height} = Dimensions.get('window');
 
-const Col = ({children}) => {
+const Col = ({children, bgColor}) => {
     return (
-        <View style={styles.layout}>
+        <View style={[styles.layout , {backgroundColor : bgColor}]}>
             {children}
         </View>
     )

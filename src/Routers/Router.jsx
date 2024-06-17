@@ -1,12 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import Splash from "./Introduce/Splash";
-import Introduce1 from "./Introduce/Introduce1";
-import Introduce2 from "./Introduce/Introduce2";
-import Introduce3 from "./Introduce/Introduce3";
-import Login from "./LoginSign/Login";
-import Reset from "./LoginSign/Reset";
-import SignUp from "./LoginSign/SignUp";
+import Splash from "../Introduce/Splash";
+import Introduce1 from "../Introduce/Introduce1";
+import Introduce2 from "../Introduce/Introduce2";
+import Introduce3 from "../Introduce/Introduce3";
+import Login from "../LoginSign/Login";
+import Reset from "../LoginSign/Reset";
+import SignUp from "../LoginSign/SignUp";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +30,8 @@ const LoginStack = () => {
         </Stack.Navigator>
     )
 }
-;
+
+
 
 const Router = () => {
     return (
