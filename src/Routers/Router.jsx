@@ -7,6 +7,7 @@ import Introduce3 from "../Introduce/Introduce3";
 import Login from "../LoginSign/Login";
 import Reset from "../LoginSign/Reset";
 import SignUp from "../LoginSign/SignUp";
+import BottomTab from "./BottomTab";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,7 @@ const Router = () => {
         <Stack.Navigator screenOptions={{headerShown : false}}>
             <Stack.Screen name='IntroduceStack' component={IntroduceStack} />
             <Stack.Screen name="LoginStack" component={LoginStack} />
+            <Stack.Screen name='BottomTab' component={BottomTab} />
         </Stack.Navigator>
     )
 }
