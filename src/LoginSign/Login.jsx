@@ -1,40 +1,40 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import Row from "../../Components/Row";
 import Col from "../../Components/Col";
+import Row from "../../Components/Row";
 
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
     const [loginOption, setLoginOption] = useState('PHONE');
 
     return (
-        <Col>
-            <Row>
+        <Row>
+            <Col>
                 <Text style={[styles.text, { marginTop: 50, fontSize: 24 }]}>로그인</Text>
                 <View style={styles.touchOptionView}>
-                    <TouchableOpacity 
-                        style={[styles.optionContainer, loginOption === 'PHONE' && {borderBottomColor : '#5341E5'}]}
+                    <TouchableOpacity
+                        style={[styles.optionContainer, loginOption === 'PHONE' && { borderBottomColor: '#5341E5' }]}
                         onPress={() => setLoginOption('PHONE')}>
                         <Text style={styles.text}>휴대폰 번호</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={[styles.optionContainer, loginOption === 'EMAIL' && {borderBottomColor : '#5341E5'}]}
-                        onPress={() =>  setLoginOption('EMAIL')}>
+                    <TouchableOpacity
+                        style={[styles.optionContainer, loginOption === 'EMAIL' && { borderBottomColor: '#5341E5' }]}
+                        onPress={() => setLoginOption('EMAIL')}>
                         <Text style={styles.text}>이메일 또는 아이디</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.inputView}>
                     <View style={styles.inputContainer}>
-                        
-                            {loginOption === 'PHONE' ? (
-                                 <TextInput
-                                 placeholder="휴대폰번호"
-                                 placeholderTextColor='#A5A5A7' />
-                            ) : (
-                                <TextInput
-                                 placeholder="이메일 또는 아이디"
-                                 placeholderTextColor='#A5A5A7' />
-                            )
-                           
+
+                        {loginOption === 'PHONE' ? (
+                            <TextInput
+                                placeholder="휴대폰번호"
+                                placeholderTextColor='#A5A5A7' />
+                        ) : (
+                            <TextInput
+                                placeholder="이메일 또는 아이디"
+                                placeholderTextColor='#A5A5A7' />
+                        )
+
                         }
                     </View>
                     <View style={styles.inputContainer}>
@@ -48,10 +48,10 @@ const Login = ({navigation}) => {
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('Reset')}>  
+                        onPress={() => navigation.navigate('Reset')}>
                         <Text style={[styles.text, { fontSize: 10 }]}>비밀번호를 잃어버리셨나요?</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[styles.inputContainer, { justifyContent: 'center', marginTop: 16, backgroundColor: '#5341E5' }]}
                         onPress={() => navigation.navigate('BottomTab')}>
                         <Text style={[styles.text, { color: '#fff' }]}>완료</Text>
@@ -72,14 +72,14 @@ const Login = ({navigation}) => {
                         <Image source={appleIcon} style={styles.socialLoginIcon} />
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity 
-                    style={{ marginTop : 'auto'}}
+            </Col>
+                <TouchableOpacity
+                    style={{ marginTop: 'auto' }}
                     onPress={() => navigation.navigate('SignUp')}
-                    >
+                >
                     <Text style={[styles.text, { fontSize: 12 }]}>회원이 아니신가요?</Text>
                 </TouchableOpacity>
-            </Row>
-        </Col>
+        </Row>
     )
 }
 

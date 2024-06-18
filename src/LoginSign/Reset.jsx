@@ -1,16 +1,16 @@
 import React from "react";
 import { Image, View, StyleSheet, Text, Dimensions, TextInput, TouchableOpacity } from "react-native";
 
-import Col from "../../Components/Col";
 import Row from "../../Components/Row";
+import Col from "../../Components/Col";
 
 const { width, height } = Dimensions.get('window');
 
 
 const Reset = ({navigation}) => {
     return (
-        <Col bgColor='#fff'>
-            <Row>
+        <Row bgColor='#fff'>
+            <Col>
                 <Image source={resetIcon} style={{ width: 200, height: 200, marginTop : height * 0.15}} />
                 <View style={styles.inpuView}>
                     <Text style={[styles.text, { color : '#A5A5A7' }]}>입력한 이메일 주소 또는 번호로</Text>
@@ -29,8 +29,8 @@ const Reset = ({navigation}) => {
                         <Text style={[styles.text, { fontSize: 12 }]}>비밀번호가 기억났나요?</Text>
                     </TouchableOpacity>
                 </View>
-            </Row>
-        </Col>
+            </Col>
+        </Row>
     )
 }
 

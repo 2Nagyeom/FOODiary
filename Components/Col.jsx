@@ -1,11 +1,11 @@
 import React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 
-const {height} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
-const Col = ({children, bgColor}) => {
+const Col = ({children}) => {
     return (
-        <View style={[styles.layout , {backgroundColor : bgColor}]}>
+        <View style={styles.layout}>
             {children}
         </View>
     )
@@ -14,9 +14,9 @@ const Col = ({children, bgColor}) => {
 
 const styles = StyleSheet.create({
     layout : {
-        height : height,
-        paddingVertical : 32,
-        alignItems :'center',
+        width : width,
+        paddingHorizontal : 24,
+        alignItems : 'center',
     },
 })
 

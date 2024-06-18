@@ -1,7 +1,7 @@
 import React from "react";
 import { Dimensions, ImageBackground, View, Text, StyleSheet, Image } from "react-native";
-import Col from "../../Components/Col";
-import Row from "../../Components/Row";
+import Col from "../../Components/Row";
+import Row from "../../Components/Col";
 
 const {width, height} = Dimensions.get('window');
 
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         alignItems : 'center',
         flexDirection : 'row',
         marginTop : 40,
-        marginBottom : 20,
+        marginBottom : 40,
     },
     textView : {
         alignItems : 'center',

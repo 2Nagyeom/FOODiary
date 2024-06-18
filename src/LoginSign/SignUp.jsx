@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Dimensions, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 
-import Row from "../../Components/Row";
-import Col from "../../Components/Col";
+import Row from "../../Components/Col";
+import Col from "../../Components/Row";
 
 const { width, height } = Dimensions.get('window');
 
@@ -77,7 +77,7 @@ const SignUp = ({ navigation }) => {
                         </View>
                     </View>
                 </View>
-                <View style={{ width: '100%', marginTop: 'auto', gap: 8 }}>
+                <View style={{ width: '100%', top: 140, gap: 8 }}>
                     <TouchableOpacity
                         style={[styles.inputContainer, { justifyContent: 'center', backgroundColor: '#5341E5' }]}
                         onPress={() => setModalVisible(true)}>
