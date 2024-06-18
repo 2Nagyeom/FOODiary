@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Dimensions, View, StyleSheet, Text, TextInput, TouchableOpacity, Image, FlatList } from "react-native";
-import Col from "../../Components/Row";
 import Row from "../../Components/Row";
+import Col from "../../Components/Row";
 
 const { width, height } = Dimensions.get('window');
 
@@ -32,8 +32,8 @@ const List = () => {
     }
 
     return (
-        <Col bgColor='#F5F5F5'>
-            <Row>
+        <Row bgColor='#F5F5F5'>
+            <Col>
                 <View style={styles.searchView}>
                     <View style={styles.searchContainer}>
                         <TextInput
@@ -78,8 +78,8 @@ const List = () => {
                         showsVerticalScrollIndicator={false}
                     />
                 </View>
-            </Row>
-        </Col>
+            </Col>
+        </Row>
     )
 }
 
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
         height: 112,
         justifyContent: 'space-between',
         flexDirection: 'row',
-        marginBottom: 20,
+        marginBottom: 16,
         padding: 12,
         borderRadius: 8,
         backgroundColor: '#fff',
