@@ -37,9 +37,9 @@ const LoginStack = () => {
 const Router = () => {
     return (
         <Stack.Navigator screenOptions={{headerShown : false}}>
+            <Stack.Screen name='BottomTab' component={BottomTab} />
             <Stack.Screen name='IntroduceStack' component={IntroduceStack} />
             <Stack.Screen name="LoginStack" component={LoginStack} />
-            <Stack.Screen name='BottomTab' component={BottomTab} />
         </Stack.Navigator>
     )
 }
