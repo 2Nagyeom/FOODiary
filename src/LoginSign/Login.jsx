@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Col from "../../Components/Col";
 import Row from "../../Components/Row";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Login = ({ navigation }) => {
     const [loginOption, setLoginOption] = useState('PHONE');
