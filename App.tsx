@@ -8,7 +8,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 
-import Router from './src/Routers/Router';
+import Router from './src/Router';
 
 function App(): React.JSX.Element {
   return (

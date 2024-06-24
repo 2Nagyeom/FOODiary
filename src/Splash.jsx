@@ -5,7 +5,7 @@ const Splash = ({navigation}) => {
 
     useEffect(() => {
         setTimeout(() => {
-            navigation.navigate('Introduce1')
+            navigation.navigate('Main')
         }, 2000);
     })
 
@@ -38,6 +38,6 @@ const styles = StyleSheet.create({
 
 })
 
-const SplashIcon = require('../../assets/icons/SplashIcon.png');
+const SplashIcon = require('../assets/icons/SplashIcon.png');
 
 export default Splash;
