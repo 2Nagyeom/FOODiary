@@ -217,13 +217,13 @@ const Main = () => {
                                 <TextInput
                                     style={styles.shopDetailText}
                                     placeholder="매장 음식 퀄리티가 좋았다.."
-                                    textAlignVertical="top"
+                                    textAlignVertical="top"å
                                     multiline={true}
                                     numberOfLines={100}
                                     onChangeText={value => onChangeArea(value)}
                                 />
                             </View>
-                            <View style={[styles.gapView, { height: 180 }]}>
+                            <View style={[styles.gapView, { gap : 4, åheight: 180 }]}>
                                 <Text style={styles.text}>매장에 대한 사진을 등록해주세요!</Text>
                                 {
                                     storeImage.length > 0 ? (
@@ -234,7 +234,7 @@ const Main = () => {
                                             {storeImage.map(v => (<Image source={{ uri: v }} style={{ width: 100, height: 100, borderRadius : 8, marginRight : 4 }} />))}
                                         </ScrollView>
                                         <TouchableOpacity
-                                        onPress={() => onPickImg()}>
+                                            onPress={() => onPickImg()}>
                                         <Text style={[styles.text, {fontWeight : '700', color: '#5341E5' }]}>사진 다시 고르기</Text>
                                     </TouchableOpacity>
                                         </>
