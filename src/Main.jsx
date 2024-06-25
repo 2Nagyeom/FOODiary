@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput } from "react-native";
 import { NaverMapView } from "@mj-studio/react-native-naver-map";
+import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
 import Modal from "react-native-modal";
 import GCAPI from "../APIs/reGEO";
@@ -22,7 +23,7 @@ const Main = () => {
     const [storeOption, setStoreOption] = useState('RESTORANT');
     const [storeState, setStoreState] = useState('GOOD');
     const [storeComment, setStoreComment] = useState('');
-    const [storeImage, setStoreImage] = useState('');
+    const [storeImage, setStoreImage] = useState([]);
     const [storeStar, setStoreStar] = useState('YES');
 
     const handleOnScroll = event => {
@@ -54,6 +55,14 @@ const Main = () => {
 
     const onChangeArea = (value) => {
         setStoreComment(value)
+    }
+
+    const onPickImg = () => {
+        ImagePicker.openPicker({
+            multiple: true
+        }).then(images => {
+            setStoreImage(images.map(v => v.sourceURL));
+        });
     }
 
 
@@ -214,11 +223,28 @@ const Main = () => {
                                     onChangeText={value => onChangeArea(value)}
                                 />
                             </View>
-                            <View style={[styles.gapView, { height: 100 }]}>
+                            <View style={[styles.gapView, { height: 180 }]}>
                                 <Text style={styles.text}>매장에 대한 사진을 등록해주세요!</Text>
-                                <TouchableOpacity>
-                                    <Text style={[styles.text, { marginLeft: 20, color: '#A5A5A7' }]}>사진 등록하기...</Text>
-                                </TouchableOpacity>
+                                {
+                                    storeImage.length > 0 ? (
+                                        <>
+                                        <ScrollView
+                                            showsHorizontalScrollIndicator={false}
+                                            horizontal={true}>
+                                            {storeImage.map(v => (<Image source={{ uri: v }} style={{ width: 100, height: 100, borderRadius : 8, marginRight : 4 }} />))}
+                                        </ScrollView>
+                                        <TouchableOpacity
+                                        onPress={() => onPickImg()}>
+                                        <Text style={[styles.text, {fontWeight : '700', color: '#5341E5' }]}>사진 다시 고르기</Text>
+                                    </TouchableOpacity>
+                                        </>
+                                    ) : (
+                                        <TouchableOpacity
+                                            onPress={() => onPickImg()}>
+                                            <Text style={[styles.text, { marginLeft: 20, color: '#A5A5A7' }]}>사진 등록하기...</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
                             </View>
                             <View style={styles.gapView}>
                                 <Text style={styles.text}>매장을 즐겨찾기 하시겠어요?</Text>
@@ -243,10 +269,10 @@ const Main = () => {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            <View style={[styles.gapView, { gap : 4, alignItems: 'center' }]}>
+                            <View style={[styles.gapView, { gap: 4, alignItems: 'center' }]}>
                                 <TouchableOpacity
                                     onPress={() => setIsModalVisible(false)}>
-                                    <Text style={[styles.text, { textDecorationLine:'underline', color: '#A5A5A7' }]}>나중에 쓰기</Text>
+                                    <Text style={[styles.text, { textDecorationLine: 'underline', color: '#A5A5A7' }]}>나중에 쓰기</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.inputContainer, {}]}
