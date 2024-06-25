@@ -1,5 +1,5 @@
-const CLIENT_ID = 'n7h14ka0ix';
-const CLIENT_SECRET = 'qGnt3rKB394WJYvRBV70tO1YVhAQ92DuhXl5pIOc';
+const CLIENT_ID = '';
+const CLIENT_SECRET = '';
 
 const GCAPI = async (lat, lon) => {
     const res = await fetch(`https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?request=coordsToaddr&coords=${lon},${lat}&sourcecrs=epsg:4326&output=json&orders=addr,admcode`, {

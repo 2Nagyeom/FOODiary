@@ -1,6 +1,7 @@
-import { NaverMapView } from "@mj-studio/react-native-naver-map";
 import React, { useRef, useState } from "react";
 import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput } from "react-native";
+import { NaverMapView } from "@mj-studio/react-native-naver-map";
+import DatePicker from 'react-native-date-picker'
 import Modal from "react-native-modal";
 import GCAPI from "../APIs/reGEO";
 
@@ -9,6 +10,8 @@ const { width, height } = Dimensions.get('screen');
 const Main = () => {
     const mapRef = useRef(null);
     const scrollViewRef = useRef(null);
+
+    const [date, setDate] = useState(new Date())
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [pickedLocation, setPickedLocation] = useState('');
@@ -113,7 +116,13 @@ const Main = () => {
                             </View>
                             <View style={[styles.gapView, { height: 240 }]}>
                                 <Text style={styles.text}>매장에 간 날짜를 선택해주세요!</Text>
-                                <View style={styles.datePickerContainer}></View>
+                                <View style={styles.datePickerContainer}>
+                                    <DatePicker 
+                                        date={date}
+                                        minuteInterval={5}
+                                        locale='kor' 
+                                        onDateChange={setDate} />
+                                </View>
                             </View>
                             <View style={styles.gapView}>
                                 <Text style={styles.text}>매장의 유형을 선택해주세요!</Text>
@@ -228,7 +237,6 @@ const styles = StyleSheet.create({
     },
     datePickerContainer: {
         height: '80%',
-        backgroundColor: 'skyblue',
     },
     optionPickerComponent: {
         flex: 1,
