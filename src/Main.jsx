@@ -2,6 +2,7 @@ import { NaverMapView } from "@mj-studio/react-native-naver-map";
 import React, { useRef, useState } from "react";
 import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput } from "react-native";
 import Modal from "react-native-modal";
+import GCAPI from "../APIs/reGEO";
 
 const { width, height } = Dimensions.get('screen');
 
@@ -10,10 +11,11 @@ const Main = () => {
     const scrollViewRef = useRef(null);
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const Seomeun = {
-        latitude: 35.1554358,
-        longitude: 129.0612696,
-    };
+    const [pickedLocation, setPickedLocation] = useState('');
+    const [detailLocation, setDetailLocation] = useState({
+        subLocation : '',
+        storeName : '',
+    });
 
     const handleOnScroll = event => {
         setScrollOffset(event.nativeEvent.contentOffset.y);
@@ -29,6 +31,19 @@ const Main = () => {
         setIsModalVisible(false);
     };
 
+    const onTapMap =  async event => {
+        const res = await GCAPI(event.latitude, event.longitude)
+        setPickedLocation(res)
+        setIsModalVisible(true);
+    }
+
+    const onChangeText = (name, value) => {
+        setDetailLocation({
+            ...detailLocation,
+            [name] : value,
+        })
+    }
+
 
     return (
         <SafeAreaView>
@@ -36,17 +51,16 @@ const Main = () => {
                 ref={mapRef}
                 style={{ width: width, height: height }}
                 initialRegion={{
-                    longitude: Seomeun.longitude,
-                    latitude: Seomeun.latitude,
+                    latitude: 35.1578157,
+                    longitude: 129.0600331,
+                    latitudeDelta : 0.00005,
+                    longitudeDelta : 0.0028
                 }}
                 isShowLocationButton={true}
                 // onInitialized={() => console.log('initialized!')}
                 // onOptionChanged={() => console.log('Option Changed!')}
                 // onCameraChanged={(args) => console.log(`Camera Changed: ${formatJson(args)}`)}
-                onTapMap={() => {
-                    console.log('tap map!')
-                    setIsModalVisible(true)
-                }}
+                onTapMap={onTapMap}
             />
             <Modal
                 testID={'modal'}
@@ -73,7 +87,7 @@ const Main = () => {
                             <View style={[styles.gapView, { height: 240 }]}>
                                 <Text style={styles.text}>매장 주소</Text>
                                 <View style={{ gap: 4 }}>
-                                    <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>부산광역시 남구 어쩌고 저쩌고</Text>
+                                    <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{pickedLocation}</Text>
                                     <TouchableOpacity>
                                         <Text style={[styles.text, { fontWeight: '700', fontSize: 12, color: '#AAAAAA' }]}>이 주소가 아니신가요?</Text>
                                     </TouchableOpacity>
@@ -84,6 +98,7 @@ const Main = () => {
                                         <TextInput
                                             style={styles.shopTextInput}
                                             placeholder="예) 2층 또는 골목길 들어가기"
+                                            onChangeText={value => onChangeText('subLocation', value)}
                                         />
                                     </View>
                                     <View style={styles.shopTextInputContainer}>
@@ -91,6 +106,7 @@ const Main = () => {
                                         <TextInput
                                             style={styles.shopTextInput}
                                             placeholder="매장 이름"
+                                            onChangeText={value => onChangeText('storeName', value)}
                                         />
                                     </View>
                                 </View>
@@ -164,7 +180,7 @@ const Main = () => {
                                 <Text style={[styles.text, { color: '#A5A5A7' }]}>나중에 쓰기</Text>
                                 <TouchableOpacity
                                     style={[styles.inputContainer, {  }]}
-                                    onPress={() => navigation.navigate('BottomTab')}>
+                                    onPress={() => console.log(detailLocation)}>
                                     <Text style={[styles.text, { fontWeight : '700', fontSize : 16, color: '#fff' }]}>완료</Text>
                                 </TouchableOpacity>
                             </View>
