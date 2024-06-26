@@ -1,30 +1,46 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput } from "react-native";
 import { NaverMapView } from "@mj-studio/react-native-naver-map";
 import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
 import GCAPI from "../APIs/reGEO";
 
 const { width, height } = Dimensions.get('screen');
 
-const Main = () => {
+const Main = ({ route, navigation }) => {
+    const { newLocation = '', showModal = false } = route.params || {}
+
     const mapRef = useRef(null);
     const scrollViewRef = useRef(null);
-
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [pickedLocation, setPickedLocation] = useState('');
-    const [storeLocation, setStoreLocation] = useState({
+    const [date, setDate] = useState(new Date())
+    const [storeInfo, setStoreInfo] = useState({
+        mainLocation: '',
         subLocation: '',
         storeName: '',
-    });
-    const [date, setDate] = useState(new Date())
-    const [storeOption, setStoreOption] = useState('RESTORANT');
-    const [storeState, setStoreState] = useState('GOOD');
-    const [storeComment, setStoreComment] = useState('');
-    const [storeImage, setStoreImage] = useState([]);
-    const [storeStar, setStoreStar] = useState('YES');
+        storeData: date,
+        storeOption: 'RESTORANT',
+        storeState: 'GOOD',
+        storeComment: '',
+        storeImage: [],
+        storeStar: 'YES'
+    })
+
+    useEffect(() => {
+        if (showModal) {
+            setIsModalVisible(true)
+        }
+
+        if (newLocation) {
+            setStoreInfo(prev => ({
+                ...prev,
+                mainLocation: newLocation
+            }))
+        }
+    }, [showModal, newLocation]);
 
     const handleOnScroll = event => {
         setScrollOffset(event.nativeEvent.contentOffset.y);
@@ -42,28 +58,41 @@ const Main = () => {
 
     const onTapMap = async event => {
         const res = await GCAPI(event.latitude, event.longitude)
-        setStoreLocation(res)
+        setStoreInfo(prev => ({
+            ...prev,
+            mainLocation: res,
+        }))
         setIsModalVisible(true);
     }
 
-    const onChangeText = (name, value) => {
-        setDetailLocation({
-            ...detailLocation,
-            [name]: value,
-        })
+    const onChangeValue = (obj, value) => {
+        setStoreInfo(prev => ({
+            ...prev,
+            [obj]: value
+        }))
     }
 
-    const onChangeArea = (value) => {
-        setStoreComment(value)
-    }
 
     const onPickImg = () => {
         ImagePicker.openPicker({
             multiple: true
         }).then(images => {
-            setStoreImage(images.map(v => v.sourceURL));
+            setStoreInfo(prev => ({
+                ...prev,
+                storeImage: (images.map(v => v.sourceURL))
+            }))
         });
     }
+
+    const storeData = async (value) => {
+        try {
+            await AsyncStorage.setItem('storeInfo', JSON.stringify(value));
+            console.log('값 저장 완료!!', value);
+        } catch (e) {
+            // saving error
+            console.log('값 전송 오류!', e);
+        }
+    };
 
 
     return (
@@ -108,8 +137,19 @@ const Main = () => {
                             <View style={[styles.gapView, { height: 240 }]}>
                                 <Text style={styles.text}>매장 주소</Text>
                                 <View style={{ gap: 4 }}>
-                                    <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{storeLocation}</Text>
-                                    <TouchableOpacity>
+                                    {
+                                        newLocation == '' ? (
+                                            <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{storeInfo.mainLocation}</Text>
+                                        ) : (
+
+                                            <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{newLocation}</Text>
+                                        )
+                                    }
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setIsModalVisible(false);
+                                            navigation.navigate('Post')
+                                        }}>
                                         <Text style={[styles.text, { fontWeight: '700', fontSize: 12, color: '#AAAAAA' }]}>이 주소가 아니신가요?</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -119,7 +159,7 @@ const Main = () => {
                                         <TextInput
                                             style={styles.shopTextInput}
                                             placeholder="예) 2층 또는 골목길 들어가기"
-                                            onChangeText={value => onChangeText('subLocation', value)}
+                                            onChangeText={value => onChangeValue('subLocation', value)}
                                         />
                                     </View>
                                     <View style={styles.shopTextInputContainer}>
@@ -127,7 +167,7 @@ const Main = () => {
                                         <TextInput
                                             style={styles.shopTextInput}
                                             placeholder="매장 이름"
-                                            onChangeText={value => onChangeText('storeName', value)}
+                                            onChangeText={value => onChangeValue('storeName', value)}
                                         />
                                     </View>
                                 </View>
@@ -147,29 +187,29 @@ const Main = () => {
                                 <View style={{ alignItems: 'center', flexDirection: 'row', gap: 16 }}>
                                     <TouchableOpacity
                                         style={
-                                            storeOption == 'RESTORANT' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
-                                        onPress={() => setStoreOption('RESTORANT')}>
+                                            storeInfo.storeOption == 'RESTORANT' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                        onPress={() => onChangeValue('storeOption', 'RESTORANT')}>
                                         <Image source={foodIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeOption == 'RESTORANT' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeOption == 'RESTORANT' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>음식점</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={
-                                            storeOption == 'CAFE' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
-                                        onPress={() => setStoreOption('CAFE')}>
+                                            storeInfo.storeOption == 'CAFE' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                        onPress={() => onChangeValue('storeOption', 'CAFE')}>
                                         <Image source={cafeIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeOption == 'CAFE' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeOption == 'CAFE' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>카페</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={
-                                            storeOption == 'BAR' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
-                                        onPress={() => setStoreOption('BAR')}>
+                                            storeInfo.storeOption == 'BAR' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                        onPress={() => onChangeValue('storeOption', 'BAR')}>
                                         <Image source={barIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeOption == 'BAR' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeOption == 'BAR' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>바</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -179,35 +219,35 @@ const Main = () => {
                                 <View style={{ alignItems: 'center', flexDirection: 'row', gap: 16 }}>
                                     <TouchableOpacity
                                         style={styles.conditionPickerComponent}
-                                        onPress={() => setStoreState('GOOD')}
+                                        onPress={() => onChangeValue('storeState', 'GOOD')}
                                     >
                                         <Text style={
-                                            storeState == 'GOOD' ? [styles.text, { fontSize: 48 }]
+                                            storeInfo.storeState == 'GOOD' ? [styles.text, { fontSize: 48 }]
                                                 : [styles.text, { fontSize: 40 }]}>😍</Text>
                                         <Text style={
-                                            storeState == 'GOOD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeState == 'GOOD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { fontWeight: '500', color: '#A5A5A7' }]}>좋았어요!</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={styles.conditionPickerComponent}
-                                        onPress={() => setStoreState('COMMON')}
+                                        onPress={() => onChangeValue('storeState', 'COMMON')}
                                     >
                                         <Text style={
-                                            storeState == 'COMMON' ? [styles.text, { fontSize: 48 }]
+                                            storeInfo.storeState == 'COMMON' ? [styles.text, { fontSize: 48 }]
                                                 : [styles.text, { fontSize: 40 }]}>🙂</Text>
                                         <Text style={
-                                            storeState == 'COMMON' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeState == 'COMMON' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { fontWeight: '500', color: '#A5A5A7' }]}>보통이에요!</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={styles.conditionPickerComponent}
-                                        onPress={() => setStoreState('BAD')}
+                                        onPress={() => onChangeValue('storeState', 'BAD')}
                                     >
                                         <Text style={
-                                            storeState == 'BAD' ? [styles.text, { fontSize: 48 }]
+                                            storeInfo.storeState == 'BAD' ? [styles.text, { fontSize: 48 }]
                                                 : [styles.text, { fontSize: 40 }]}>😠</Text>
                                         <Text style={
-                                            storeState == 'BAD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeState == 'BAD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { fontWeight: '500', color: '#A5A5A7' }]}>별로에요!</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -217,26 +257,26 @@ const Main = () => {
                                 <TextInput
                                     style={styles.shopDetailText}
                                     placeholder="매장 음식 퀄리티가 좋았다.."
-                                    textAlignVertical="top"å
+                                    textAlignVertical="top" å
                                     multiline={true}
                                     numberOfLines={100}
-                                    onChangeText={value => onChangeArea(value)}
+                                    onChangeText={value => onChangeValue('storeComment', value)}
                                 />
                             </View>
-                            <View style={[styles.gapView, { gap : 4, åheight: 180 }]}>
+                            <View style={[styles.gapView, { gap: 4, height: 180 }]}>
                                 <Text style={styles.text}>매장에 대한 사진을 등록해주세요!</Text>
                                 {
-                                    storeImage.length > 0 ? (
+                                    storeInfo.storeImage.length > 0 ? (
                                         <>
-                                        <ScrollView
-                                            showsHorizontalScrollIndicator={false}
-                                            horizontal={true}>
-                                            {storeImage.map(v => (<Image source={{ uri: v }} style={{ width: 100, height: 100, borderRadius : 8, marginRight : 4 }} />))}
-                                        </ScrollView>
-                                        <TouchableOpacity
-                                            onPress={() => onPickImg()}>
-                                        <Text style={[styles.text, {fontWeight : '700', color: '#5341E5' }]}>사진 다시 고르기</Text>
-                                    </TouchableOpacity>
+                                            <ScrollView
+                                                showsHorizontalScrollIndicator={false}
+                                                horizontal={true}>
+                                                {storeInfo.storeImage.map(v => (<Image source={{ uri: v }} style={{ width: 100, height: 100, borderRadius: 8, marginRight: 4 }} />))}
+                                            </ScrollView>
+                                            <TouchableOpacity
+                                                onPress={() => onPickImg()}>
+                                                <Text style={[styles.text, { fontWeight: '700', color: '#5341E5' }]}>사진 다시 고르기</Text>
+                                            </TouchableOpacity>
                                         </>
                                     ) : (
                                         <TouchableOpacity
@@ -251,20 +291,20 @@ const Main = () => {
                                 <View style={styles.chooseView}>
                                     <TouchableOpacity
                                         style={
-                                            storeStar == 'YES' ? [styles.chooseContainer, { backgroundColor: '#5341E5', borderTopLeftRadius: 6, borderBottomLeftRadius: 6 }]
+                                            storeInfo.storeStar == 'YES' ? [styles.chooseContainer, { backgroundColor: '#5341E5', borderTopLeftRadius: 6, borderBottomLeftRadius: 6 }]
                                                 : [styles.chooseContainer, { borderTopLeftRadius: 6, borderBottomLeftRadius: 6 }]}
-                                        onPress={() => setStoreStar('YES')}>
+                                        onPress={() => onChangeValue('storeStar', 'YES')}>
                                         <Text style={
-                                            storeStar == 'YES' ? [styles.text, { fontWeight: '600', color: '#fff' }]
+                                            storeInfo.storeStar == 'YES' ? [styles.text, { fontWeight: '600', color: '#fff' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>할래요!</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={
-                                            storeStar == 'NO' ? [styles.chooseContainer, { backgroundColor: '#5341E5', borderTopRightRadius: 6, borderBottomRightRadius: 6 }] :
+                                            storeInfo.storeStar == 'NO' ? [styles.chooseContainer, { backgroundColor: '#5341E5', borderTopRightRadius: 6, borderBottomRightRadius: 6 }] :
                                                 [styles.chooseContainer, { borderTopRightRadius: 6, borderBottomRightRadius: 6 }]}
-                                        onPress={() => setStoreStar('NO')}>
+                                        onPress={() => onChangeValue('storeStar', 'NO')}>
                                         <Text style={
-                                            storeStar == 'NO' ? [styles.text, { fontWeight: '600', color: '#fff' }]
+                                            storeInfo.storeStar == 'NO' ? [styles.text, { fontWeight: '600', color: '#fff' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>안할래요!</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -276,7 +316,9 @@ const Main = () => {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.inputContainer, {}]}
-                                    onPress={() => console.log(detailLocation)}>
+                                    onPress={() => {
+                                        storeData(storeInfo)
+                                        setIsModalVisible(false)}}>
                                     <Text style={[styles.text, { fontWeight: '700', fontSize: 16, color: '#fff' }]}>완료</Text>
                                 </TouchableOpacity>
                             </View>
