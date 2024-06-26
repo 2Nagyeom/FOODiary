@@ -5,7 +5,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
-import GCAPI from "../APIs/reGEO";
+import storeGEO from "../APIs/storeGEO";
 
 const { width, height } = Dimensions.get('screen');
 
@@ -18,6 +18,10 @@ const Main = ({ route, navigation }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [date, setDate] = useState(new Date())
     const [storeInfo, setStoreInfo] = useState({
+        storeGPS : {
+            latitude: 0,
+            longitude: 0,
+        },
         mainLocation: '',
         subLocation: '',
         storeName: '',
@@ -33,14 +37,24 @@ const Main = ({ route, navigation }) => {
         if (showModal) {
             setIsModalVisible(true)
         }
-
         if (newLocation) {
-            setStoreInfo(prev => ({
-                ...prev,
-                mainLocation: newLocation
-            }))
+            getRes()
         }
     }, [showModal, newLocation]);
+
+
+    const getRes = async () => {
+        const res = await storeGEO.GAPI(newLocation);
+        console.log('res ====>' , res);
+        setStoreInfo(prev => ({
+            ...prev,
+            mainLocation: res.roadAddress,
+            storeGPS : {
+                latitude: res.y,
+                longitude: res.x,
+            }
+        }))
+    }
 
     const handleOnScroll = event => {
         setScrollOffset(event.nativeEvent.contentOffset.y);
@@ -54,13 +68,18 @@ const Main = ({ route, navigation }) => {
 
     const handleClose = () => {
         setIsModalVisible(false);
+        
     };
 
     const onTapMap = async event => {
-        const res = await GCAPI(event.latitude, event.longitude)
+        const res = await storeGEO.REGAPI(event.latitude, event.longitude)
         setStoreInfo(prev => ({
             ...prev,
-            mainLocation: res,
+            storeGPS: {
+                latitude: event.latitude,
+                longitude: event.longitude,
+            },
+            mainLocation: res.roadAddress,
         }))
         setIsModalVisible(true);
     }
@@ -318,7 +337,11 @@ const Main = ({ route, navigation }) => {
                                     style={[styles.inputContainer, {}]}
                                     onPress={() => {
                                         storeData(storeInfo)
-                                        setIsModalVisible(false)}}>
+                                        setIsModalVisible(false)
+                                        setStoreInfo(prev => ({
+                                            ...prev,
+                                            mainLocation : '',
+                                        }))}}>
                                     <Text style={[styles.text, { fontWeight: '700', fontSize: 16, color: '#fff' }]}>완료</Text>
                                 </TouchableOpacity>
                             </View>

@@ -12,7 +12,7 @@ const Post = ({navigation}) => {
         style={{ width: width, height: height }}
         jsOptions={{ animation: true }}
         onSelected={data => {
-          console.log('data ========> ', data.address);
+          // console.log('data ========> ', data);
           navigation.navigate('Main', {
             newLocation : data.address,
             showModal : true
