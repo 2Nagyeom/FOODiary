@@ -3,6 +3,7 @@ import React from "react";
 import Splash from "./Splash";
 import Main from "./Main";
 import Post from "./Post";
+import List from "./List";
 
 const Stack = createNativeStackNavigator();
 
@@ -12,6 +13,7 @@ const Router = () => {
             <Stack.Screen name='Main' component={Main} />
             <Stack.Screen name='Splash' component={Splash} />
             <Stack.Screen name='Post' component={Post} />
+            <Stack.Screen name='List' component={List} />
         </Stack.Navigator>
     )
 }

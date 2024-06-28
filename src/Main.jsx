@@ -6,6 +6,7 @@ import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
 import storeGEO from "../APIs/storeGEO";
+import ListBtn from "../Components/ListBtn";
 
 const { width, height } = Dimensions.get('screen');
 
@@ -17,16 +18,17 @@ const Main = ({ route, navigation }) => {
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [date, setDate] = useState(new Date())
-    const [saveLocation,setSaveLocation] = useState('');
+    const [saveLocation, setSaveLocation] = useState('');
+    const [storeList, setStoreList] = useState([]);
     const [storeInfo, setStoreInfo] = useState({
-        storeGPS : {
+        storeGPS: {
             latitude: 0,
             longitude: 0,
         },
         mainLocation: '',
         subLocation: '',
         storeName: '',
-        storeData: date,
+        storeDate: date,
         storeOption: 'RESTORANT',
         storeState: 'GOOD',
         storeComment: '',
@@ -41,7 +43,7 @@ const Main = ({ route, navigation }) => {
         if (newLocation) {
             getRes(newLocation)
             setSaveLocation(newLocation)
-        } 
+        }
     }, [showModal, newLocation]);
 
 
@@ -49,12 +51,11 @@ const Main = ({ route, navigation }) => {
         const res = await storeGEO.GAPI(location);
         setStoreInfo(prev => ({
             ...prev,
-            storeGPS : {
+            storeGPS: {
                 latitude: res.y,
                 longitude: res.x,
             }
         }))
-        console.log('when call GAPI storeInfo =======> ', storeInfo);
     }
 
     const onTapMap = async event => {
@@ -68,9 +69,26 @@ const Main = ({ route, navigation }) => {
             },
             mainLocation: res,
         }))
-        console.log('when Tab storeInfo =======> ', storeInfo);
         setIsModalVisible(true);
     }
+
+    const storeData = async (value) => {
+        try {
+            const existStore = await AsyncStorage.getItem('storeInfo');
+            let storeList = [];
+    
+            if (existStore !== null) {
+                storeList = JSON.parse(existStore);
+            }
+    
+            storeList.push(value);
+    
+            await AsyncStorage.setItem('storeInfo', JSON.stringify(storeList));
+            console.log('값 저장 완료!!', storeList);
+        } catch (e) {
+            console.log('값 전송 오류!', e);
+        }
+    };
 
 
     const handleOnScroll = event => {
@@ -85,11 +103,10 @@ const Main = ({ route, navigation }) => {
 
     const handleClose = () => {
         setIsModalVisible(false);
-        console.log('modal 닫힘!');
         setSaveLocation('');
     };
 
-    
+
     const onChangeValue = (obj, value) => {
         setStoreInfo(prev => ({
             ...prev,
@@ -108,18 +125,13 @@ const Main = ({ route, navigation }) => {
         });
     }
 
-    const storeData = async (value) => {
-        try {
-            await AsyncStorage.setItem('storeInfo', JSON.stringify(value));
-            console.log('값 저장 완료!!', value);
-        } catch (e) {
-            // saving error
-            console.log('값 전송 오류!', e);
-        }
-    };
+    const goToList = () => {
+        navigation.navigate('List');
+    }
+
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
             <NaverMapView
                 ref={mapRef}
                 style={{ width: width, height: height }}
@@ -134,7 +146,10 @@ const Main = ({ route, navigation }) => {
                 // onOptionChanged={() => console.log('Option Changed!')}
                 // onCameraChanged={(args) => console.log(`Camera Changed: ${formatJson(args)}`)}
                 onTapMap={onTapMap}
-            />
+            >
+
+            </NaverMapView>
+            <ListBtn onPress={goToList} />
             <Modal
                 testID={'modal'}
                 isVisible={isModalVisible}
@@ -343,8 +358,9 @@ const Main = ({ route, navigation }) => {
                                         setIsModalVisible(false)
                                         setStoreInfo(prev => ({
                                             ...prev,
-                                            mainLocation : '',
-                                        }))}}>
+                                            mainLocation: '',
+                                        }))
+                                    }}>
                                     <Text style={[styles.text, { fontWeight: '700', fontSize: 16, color: '#fff' }]}>완료</Text>
                                 </TouchableOpacity>
                             </View>
