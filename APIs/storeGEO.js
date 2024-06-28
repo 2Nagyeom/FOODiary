@@ -22,6 +22,7 @@ export const GAPI = async (address) => {
     const url = `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${address}`;
     const json = await fetchFromNaverApi(url);
 
+    console.log('json ========> ', json.addresses);
     return json.addresses;
 };
 
@@ -41,7 +42,6 @@ export const REGAPI = async (lat, lon) => {
         .filter(name => name.trim() !== '') 
         .join(' ');
         
-        // console.log('pickLocation ======> ', pickLocation);
         return pickLocation
     } else {
         console.error('no results');

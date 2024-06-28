@@ -17,6 +17,7 @@ const Main = ({ route, navigation }) => {
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [date, setDate] = useState(new Date())
+    const [saveLocation,setSaveLocation] = useState('');
     const [storeInfo, setStoreInfo] = useState({
         storeGPS : {
             latitude: 0,
@@ -38,23 +39,39 @@ const Main = ({ route, navigation }) => {
             setIsModalVisible(true)
         }
         if (newLocation) {
-            getRes()
-        }
+            getRes(newLocation)
+            setSaveLocation(newLocation)
+        } 
     }, [showModal, newLocation]);
 
 
-    const getRes = async () => {
-        const res = await storeGEO.GAPI(newLocation);
-        console.log('res ====>' , res);
+    const getRes = async (location) => {
+        const res = await storeGEO.GAPI(location);
         setStoreInfo(prev => ({
             ...prev,
-            mainLocation: res.roadAddress,
             storeGPS : {
                 latitude: res.y,
                 longitude: res.x,
             }
         }))
+        console.log('when call GAPI storeInfo =======> ', storeInfo);
     }
+
+    const onTapMap = async event => {
+        const res = await storeGEO.REGAPI(event.latitude, event.longitude)
+
+        setStoreInfo(prev => ({
+            ...prev,
+            storeGPS: {
+                latitude: event.latitude,
+                longitude: event.longitude,
+            },
+            mainLocation: res,
+        }))
+        console.log('when Tab storeInfo =======> ', storeInfo);
+        setIsModalVisible(true);
+    }
+
 
     const handleOnScroll = event => {
         setScrollOffset(event.nativeEvent.contentOffset.y);
@@ -68,29 +85,17 @@ const Main = ({ route, navigation }) => {
 
     const handleClose = () => {
         setIsModalVisible(false);
-        
+        console.log('modal 닫힘!');
+        setSaveLocation('');
     };
 
-    const onTapMap = async event => {
-        const res = await storeGEO.REGAPI(event.latitude, event.longitude)
-        setStoreInfo(prev => ({
-            ...prev,
-            storeGPS: {
-                latitude: event.latitude,
-                longitude: event.longitude,
-            },
-            mainLocation: res.roadAddress,
-        }))
-        setIsModalVisible(true);
-    }
-
+    
     const onChangeValue = (obj, value) => {
         setStoreInfo(prev => ({
             ...prev,
             [obj]: value
         }))
     }
-
 
     const onPickImg = () => {
         ImagePicker.openPicker({
@@ -112,7 +117,6 @@ const Main = ({ route, navigation }) => {
             console.log('값 전송 오류!', e);
         }
     };
-
 
     return (
         <SafeAreaView>
@@ -157,11 +161,10 @@ const Main = ({ route, navigation }) => {
                                 <Text style={styles.text}>매장 주소</Text>
                                 <View style={{ gap: 4 }}>
                                     {
-                                        newLocation == '' ? (
+                                        saveLocation == '' ? (
                                             <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{storeInfo.mainLocation}</Text>
                                         ) : (
-
-                                            <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{newLocation}</Text>
+                                            <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{saveLocation}</Text>
                                         )
                                     }
                                     <TouchableOpacity
