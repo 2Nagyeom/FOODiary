@@ -19,7 +19,6 @@ const Main = ({ route, navigation }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [date, setDate] = useState(new Date())
     const [saveLocation, setSaveLocation] = useState('');
-    const [storeList, setStoreList] = useState([]);
     const [storeInfo, setStoreInfo] = useState({
         storeGPS: {
             latitude: 0,
@@ -29,7 +28,7 @@ const Main = ({ route, navigation }) => {
         subLocation: '',
         storeName: '',
         storeDate: date,
-        storeOption: 'RESTORANT',
+        storeOption: 'FOOD',
         storeState: 'GOOD',
         storeComment: '',
         storeImage: [],
@@ -224,11 +223,11 @@ const Main = ({ route, navigation }) => {
                                 <View style={{ alignItems: 'center', flexDirection: 'row', gap: 16 }}>
                                     <TouchableOpacity
                                         style={
-                                            storeInfo.storeOption == 'RESTORANT' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
-                                        onPress={() => onChangeValue('storeOption', 'RESTORANT')}>
+                                            storeInfo.storeOption == 'FOOD' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                        onPress={() => onChangeValue('storeOption', 'FOOD')}>
                                         <Image source={foodIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeInfo.storeOption == 'RESTORANT' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeOption == 'FOOD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>음식점</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
