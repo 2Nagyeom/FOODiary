@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList, SafeAreaView, Text, TouchableOpacity, View, Image, StyleSheet, Dimensions, TextInput } from "react-native";
+import MoveBtn from "../Components/MoveBtn";
 
 const { width, height } = Dimensions.get('window')
 
@@ -67,10 +68,18 @@ const List = ({ navigation }) => {
                         <Text>{item.storeState}</Text>
                         <Text>{item.storeComment}</Text>
                     </View>
-                    <View style={{ alignItems: 'center', height: '100%' }}>
-                        <Text>{item.storeStar}</Text>
+                    <View style={{ alignItems: 'flex-end', height: '100%' }}>
+                        {item.storeStar == 'YES' ? (
+                            <TouchableOpacity>
+                                <Image source={starOnIcon} style={{ width: 20, height: 20 }} />
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity>
+                                <Image source={starOffIcon} style={{ width: 20, height: 20 }} />
+                            </TouchableOpacity>
+                        )}
                         <TouchableOpacity style={styles.viewMoreBtn}>
-                            <Text style={{ fontWeight: '600', color: '#fff' }}>펼쳐보기</Text>
+                            <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>펼쳐보기</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -166,14 +175,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 12,
     },
-    listImg : {
+    listImg: {
         width: 100,
         height: 100,
         borderRadius: 8,
-    },  
-    listText : {
-        fontWeight : '600',
-        fontSize : 16,
+    },
+    listText: {
+        fontWeight: '600',
+        fontSize: 16,
     },
     viewMoreBtn: {
         justifyContent: 'center',
@@ -187,4 +196,8 @@ const styles = StyleSheet.create({
 
 const searchIcon = require('../assets/icons/searchIcon.png')
 const insteadImg = require('../assets/imgs/insteadImg.png')
+const starOnIcon = require('../assets/icons/starOnIcon.png')
+const starOffIcon = require('../assets/icons/starOffIcon.png')
+
+
 export default List;

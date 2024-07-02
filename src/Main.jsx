@@ -6,7 +6,7 @@ import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
 import storeGEO from "../APIs/storeGEO";
-import ListBtn from "../Components/ListBtn";
+import ListBtn from "../Components/MoveBtn";
 
 const { width, height } = Dimensions.get('screen');
 
@@ -28,7 +28,7 @@ const Main = ({ route, navigation }) => {
         subLocation: '',
         storeName: '',
         storeDate: date,
-        storeOption: 'FOOD',
+        storeOption: '음식점',
         storeState: 'GOOD',
         storeComment: '',
         storeImage: [],
@@ -125,9 +125,8 @@ const Main = ({ route, navigation }) => {
     }
 
     const goToList = () => {
-        navigation.navigate('List');
+        navigation.navigate('BottomTab', {screen : 'List'});
     }
-
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
@@ -223,29 +222,29 @@ const Main = ({ route, navigation }) => {
                                 <View style={{ alignItems: 'center', flexDirection: 'row', gap: 16 }}>
                                     <TouchableOpacity
                                         style={
-                                            storeInfo.storeOption == 'FOOD' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
-                                        onPress={() => onChangeValue('storeOption', 'FOOD')}>
+                                            storeInfo.storeOption == '음식점' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                        onPress={() => onChangeValue('storeOption', '음식점')}>
                                         <Image source={foodIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeInfo.storeOption == 'FOOD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeOption == '음식점' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>음식점</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={
-                                            storeInfo.storeOption == 'CAFE' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
-                                        onPress={() => onChangeValue('storeOption', 'CAFE')}>
+                                            storeInfo.storeOption == '카페' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                        onPress={() => onChangeValue('storeOption', '카페')}>
                                         <Image source={cafeIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeInfo.storeOption == 'CAFE' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeOption == '카페' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>카페</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={
-                                            storeInfo.storeOption == 'BAR' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
-                                        onPress={() => onChangeValue('storeOption', 'BAR')}>
+                                            storeInfo.storeOption == '술집' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                        onPress={() => onChangeValue('storeOption', '술집')}>
                                         <Image source={barIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeInfo.storeOption == 'BAR' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            storeInfo.storeOption == '술집' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>바</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -293,7 +292,7 @@ const Main = ({ route, navigation }) => {
                                 <TextInput
                                     style={styles.shopDetailText}
                                     placeholder="매장 음식 퀄리티가 좋았다.."
-                                    textAlignVertical="top" å
+                                    textAlignVertical="top"
                                     multiline={true}
                                     numberOfLines={100}
                                     onChangeText={value => onChangeValue('storeComment', value)}

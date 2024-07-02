@@ -3,24 +3,23 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from "rea
 
 const {width, height} = Dimensions.get('window');
 
-const ListBtn = ({onPress}) => {
+const MoveBtn = ({onPress}) => {
     return (
             <TouchableOpacity 
                 style={styles.btnContainer}
                 onPress={onPress}>
-                <Image source={listBtnImg}  style={{width : 60, height : 60}}/>
+                <Image source={listBtnImg}  style={{width : 80, height : 80}}/>
             </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     btnContainer : {
-        // width : width,
-        // height : 60,
-        zIndex : 2, 
+        zIndex : 9999, 
         position : 'absolute',
-        top : 80,
-        right : 20,
+        top : height * 0.86,
+        right : width / 2 - 40,
+        
     },
     btn : {
         // marginLeft : 'auto',
@@ -29,4 +28,4 @@ const styles = StyleSheet.create({
 })
 
 const listBtnImg = require('../assets/icons/listBtnImg.png');
-export default ListBtn;
+export default MoveBtn;
