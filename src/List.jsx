@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList, SafeAreaView, Text, TouchableOpacity, View, Image, StyleSheet, Dimensions, TextInput } from "react-native";
 import MoveBtn from "../Components/MoveBtn";
+import dayjs from "dayjs";
 
 const { width, height } = Dimensions.get('window')
 
@@ -45,6 +46,7 @@ const List = ({ navigation }) => {
     }
 
     const renderItem = ({ item }) => {
+        const storeDate = dayjs(item.storeDate).format('YYYY.MM.DD')
         return (
             <View style={styles.listContainer}>
                 <View style={styles.listSection}>
@@ -63,10 +65,10 @@ const List = ({ navigation }) => {
                             </View>
                         )
                     }
-                    <View>
-                        <Text>{item.storeOption}</Text>
-                        <Text>{item.storeState}</Text>
-                        <Text>{item.storeComment}</Text>
+                    <View style={{gap : 8, height: '100%' }}>
+                        <Text style={[styles.commonText, {fontWeight : '600', fontSize : 14, color : '#5341E5'}]}>{item.storeOption}</Text>
+                        <Text style={[styles.commonText, {fontWeight : '700', fontSize : 16}] }>{item.storeName}</Text>
+                        <Text style={[styles.commonText, {fontWeight : '600', fontSize : 12, marginTop : 'auto', color : '#DCDCDC'}]}>{storeDate}</Text>
                     </View>
                     <View style={{ alignItems: 'flex-end', height: '100%' }}>
                         {item.storeStar == 'YES' ? (
@@ -191,6 +193,9 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         borderRadius: 4,
         backgroundColor: '#5341E5',
+    },
+    commonText : {
+        fontSize : 12,
     }
 })
 

@@ -1,15 +1,28 @@
 import React from "react";
-import { SafeAreaView, Text, View } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 
 
-const Settings = ()  => {
+const Settings = () => {
+
+    const clearAll = async () => {
+        try {
+            await AsyncStorage.clear()
+            console.log('삭제완료!');
+        } catch (e) {
+            // clear error
+        }
+        console.log('Done.')
+    }
+
     return (
         <SafeAreaView>
-            <View>
+            <TouchableOpacity onPress={clearAll}>
                 <Text>
-                    Settings
+                    데이터 삭제하기
                 </Text>
-            </View>
+            </TouchableOpacity>
         </SafeAreaView>
     )
 }
