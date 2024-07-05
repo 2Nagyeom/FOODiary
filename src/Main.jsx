@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput } from "react-native";
-import { NaverMapView } from "@mj-studio/react-native-naver-map";
+import { NaverMapMarkerOverlay, NaverMapView } from "@mj-studio/react-native-naver-map";
 import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,6 +9,8 @@ import storeGEO from "../APIs/storeGEO";
 import ListBtn from "../Components/MoveBtn";
 
 const { width, height } = Dimensions.get('screen');
+
+
 
 const Main = ({ route, navigation }) => {
     const { newLocation = '', showModal = false } = route.params || {}
@@ -34,8 +36,10 @@ const Main = ({ route, navigation }) => {
         storeImage: [],
         storeStar: 'YES'
     })
+    const [storeMarkerList, setStoreMarkerList] = useState([]);
 
     useEffect(() => {
+        getStoreInfoList()
         if (showModal) {
             setIsModalVisible(true)
         }
@@ -45,6 +49,23 @@ const Main = ({ route, navigation }) => {
         }
     }, [showModal, newLocation]);
 
+
+    const getStoreInfoList = async () => {
+        try {
+            const res = await AsyncStorage.getItem('storeInfo')
+            const jsonValue = JSON.parse(res)
+
+            const filteredStoreData = jsonValue.map(item => ({
+                latitude: item.storeGPS.latitude,
+                longitude: item.storeGPS.longitude,
+                storeOption: item.storeOption,
+                storeState : item.storeState
+            }))
+            setStoreMarkerList(filteredStoreData);
+        } catch (e) {
+            console.log('GET storeInfoList error =========> ', e);
+        }
+    }
 
     const getRes = async (location) => {
         const res = await storeGEO.GAPI(location);
@@ -75,13 +96,11 @@ const Main = ({ route, navigation }) => {
         try {
             const existStore = await AsyncStorage.getItem('storeInfo');
             let storeList = [];
-    
+
             if (existStore !== null) {
                 storeList = JSON.parse(existStore);
             }
-    
             storeList.push(value);
-    
             await AsyncStorage.setItem('storeInfo', JSON.stringify(storeList));
             console.log('값 저장 완료!!', storeList);
         } catch (e) {
@@ -89,6 +108,24 @@ const Main = ({ route, navigation }) => {
         }
     };
 
+    const getMarkerInfo = (storeOption, storeState) => {
+        switch(storeState) {
+            case 'GOOD' :
+                if (storeOption === '음식점') return foodAIcon
+                else if (storeOption === '카페') return cafeAIcon
+                else return barAIcon
+            case 'COMMON' : 
+                if (storeOption === '음식점') return foodBIcon
+                else if (storeOption === '카페') return cafeBIcon
+                else return barBIcon
+            case 'BAD' : 
+                if (storeOption === '음식점') return foodCIcon
+                else if (storeOption === '카페') return cafeCIcon
+                else return barCIcon
+            default : 
+                return defaultAIcon
+        }   
+    }
 
     const handleOnScroll = event => {
         setScrollOffset(event.nativeEvent.contentOffset.y);
@@ -104,7 +141,6 @@ const Main = ({ route, navigation }) => {
         setIsModalVisible(false);
         setSaveLocation('');
     };
-
 
     const onChangeValue = (obj, value) => {
         setStoreInfo(prev => ({
@@ -125,7 +161,7 @@ const Main = ({ route, navigation }) => {
     }
 
     const goToList = () => {
-        navigation.navigate('BottomTab', {screen : 'List'});
+        navigation.navigate('BottomTab', { screen: 'List' });
     }
 
     return (
@@ -145,7 +181,23 @@ const Main = ({ route, navigation }) => {
                 // onCameraChanged={(args) => console.log(`Camera Changed: ${formatJson(args)}`)}
                 onTapMap={onTapMap}
             >
-
+                {
+                    storeMarkerList.map((value, index) => {
+                        const image = getMarkerInfo(value.storeOption, value.storeState)
+                        
+                        return (
+                            <NaverMapMarkerOverlay
+                                key={index}
+                                latitude={value.latitude}
+                                longitude={value.longitude}
+                                width={60}
+                                height={60}
+                                image={image}
+                                onTap={() => console.log('Tap!!', value)}
+                            />
+                        )
+                    })
+                }
             </NaverMapView>
             <ListBtn onPress={goToList} />
             <Modal
@@ -463,5 +515,15 @@ const styles = StyleSheet.create({
 const foodIcon = require('../assets/icons/foodIcon.png');
 const cafeIcon = require('../assets/icons/cafeIcon.png');
 const barIcon = require('../assets/icons/barIcon.png');
+const foodAIcon = require('../assets/icons/foodAIcon.png');
+const foodBIcon = require('../assets/icons/foodBIcon.png');
+const foodCIcon = require('../assets/icons/foodCIcon.png');
+const cafeAIcon = require('../assets/icons/cafeAIcon.png');
+const cafeBIcon = require('../assets/icons/cafeBIcon.png');
+const cafeCIcon = require('../assets/icons/cafeCIcon.png');
+const barAIcon = require('../assets/icons/barAIcon.png');
+const barBIcon = require('../assets/icons/barBIcon.png');
+const barCIcon = require('../assets/icons/barCIcon.png');
+const defaultAIcon = require('../assets/icons/defaultAIcon.png');
 
 export default Main;
