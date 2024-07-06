@@ -10,8 +10,6 @@ import ListBtn from "../Components/MoveBtn";
 
 const { width, height } = Dimensions.get('screen');
 
-
-
 const Main = ({ route, navigation }) => {
     const { newLocation = '', showModal = false } = route.params || {}
 
@@ -184,7 +182,7 @@ const Main = ({ route, navigation }) => {
                 {
                     storeMarkerList.map((value, index) => {
                         const image = getMarkerInfo(value.storeOption, value.storeState)
-                        
+                    
                         return (
                             <NaverMapMarkerOverlay
                                 key={index}
