@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FlatList, SafeAreaView, Text, TouchableOpacity, View, Image, StyleSheet, Dimensions, TextInput,  } from "react-native";
+import { FlatList, SafeAreaView, Text, TouchableOpacity, View, Image, StyleSheet, Dimensions, TextInput, } from "react-native";
 import Modal from "react-native-modal";
 import dayjs from "dayjs";
 
@@ -55,7 +55,7 @@ const List = ({ navigation }) => {
                     {
                         item.storeImage.length > 0 ? (
                             <View style={{ flexDirection: 'row' }}>
-                                <Image source={{uri : item.storeImage[0]}} style={styles.listImg} />
+                                <Image source={{ uri: item.storeImage[0] }} style={styles.listImg} />
                                 {/* {item.storeImage.map((r, i) => {
                                     return (
                                         <Image key={i} source={{ uri: r }} style={styles.listImg} />
@@ -68,26 +68,33 @@ const List = ({ navigation }) => {
                             </View>
                         )
                     }
-                    <View style={{gap : 8, height: '100%' }}>
-                        <Text style={[styles.commonText, {fontWeight : '600', fontSize : 14, color : '#5341E5'}]}>{item.storeOption}</Text>
-                        <Text style={[styles.commonText, {fontWeight : '700', fontSize : 16}] }>{item.storeName}</Text>
-                        <Text style={[styles.commonText, {fontWeight : '600', fontSize : 12, marginTop : 'auto', color : '#A5A5A7'}]}>{storeDate}</Text>
-                    </View>
-                    <View style={{ alignItems: 'flex-end', height: '100%' }}>
-                        {item.storeStar == 'YES' ? (
-                            <TouchableOpacity>
-                                <Image source={starOnIcon} style={{ width: 20, height: 20 }} />
-                            </TouchableOpacity>
-                        ) : (
-                            <TouchableOpacity>
-                                <Image source={starOffIcon} style={{ width: 20, height: 20 }} />
-                            </TouchableOpacity>
-                        )}
-                        <TouchableOpacity 
+                    <View style={styles.listContentView}>
+                        <View style={{gap : 6, width : '60%'}}>
+                            <Text style={[styles.commonText, { fontWeight: '700', fontSize: 14, color: '#5341E5' }]}>{item.storeOption}</Text>
+                            <Text style={[styles.commonText, { fontWeight: '700', fontSize: 16 }]}>{item.storeName}</Text>
+                            <Text 
+                                style={[styles.commonText, { fontSize: 16 }]}
+                                numberOfLines={1}>{item.mainLocation}</Text>
+                            <Text style={[styles.commonText, { fontSize: 14 }]}>{item.subLocation}</Text>
+                            <Text style={[styles.commonText, { fontWeight: '600', fontSize: 12, marginTop: "auto", color: '#A5A5A7'}]}>{storeDate}</Text>
+                        </View>
+                        <View>
+                            {item.storeStar == 'YES' ? (
+                                <TouchableOpacity>
+                                    <Image source={starOnIcon} style={{ width: 20, height: 20 }} />
+                                </TouchableOpacity>
+                            ) : (
+                                <TouchableOpacity>
+                                    <Image source={starOffIcon} style={{ width: 20, height: 20 }} />
+                                </TouchableOpacity>
+                            )}
+                            {/* <TouchableOpacity 
                             style={styles.viewMoreBtn}
                             onPress={() => setIsModalVisible(true)}>
                             <Text style={{ fontSize: 14, fontWeight: '700', color: '#fff' }}>펼쳐보기</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+                        </View>
+
                     </View>
                 </View>
             </View>
@@ -125,7 +132,7 @@ const List = ({ navigation }) => {
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
                 showsHorizontalScrollIndicator={false}
-                style={{ marginTop: 40 }}
+                style={{ marginTop: 10 }}
             />
             <Modal
                 isVisible={isModalVisible}
@@ -181,56 +188,62 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     listContainer: {
-        height: height * 0.16,
-        marginBottom: 20,
-        marginHorizontal: 16,
-        borderRadius: 8,
+        width: width,
+        height: height * 0.18,
+        marginBottom: 10,
         backgroundColor: '#fff'
     },
     listSection: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        paddingHorizontal: 16,
+        gap: 20,
+        paddingLeft: 8,
+        paddingRight: 16,
         paddingVertical: 12,
     },
+    listContentView : {
+        height: '100%',
+        width: '60%',
+        flexDirection : 'row',
+        justifyContent: 'space-between' 
+    },
     listImg: {
-        width: 110,
-        height: 110,
-        borderRadius: 8,
+        width: 136,
+        height: 136,
     },
     listText: {
         fontWeight: '600',
         fontSize: 16,
     },
     viewMoreBtn: {
-        width : 80,
+        width: 80,
         justifyContent: 'center',
-        alignItems : 'center',
+        alignItems: 'center',
         marginTop: 'auto',
         paddingHorizontal: 4,
         paddingVertical: 6,
         borderRadius: 6,
         backgroundColor: '#5341E5',
     },
-    modalLayout : {
-        flex : 1,
-        alignItems : 'center',
-        justifyContent : 'center',
-    }, 
-    modalView : {
-        width : width * 0.84,
-        height : height * 0.44,
-        backgroundColor : '#fff',
-        paddingVertical : 16,
-        paddingHorizontal : 16,
-        gap : 12,
-        // justifyContent : 'center',
-        alignItems : 'center',
-        borderRadius : 12,
+    modalLayout: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    commonText : {
-        fontSize : 12,
+    modalView: {
+        width: width * 0.84,
+        height: height * 0.44,
+        backgroundColor: '#fff',
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        gap: 12,
+        // justifyContent : 'center',
+        alignItems: 'center',
+        borderRadius: 12,
+    },
+    commonText: {
+        fontSize: 12,
     }
 })
 
