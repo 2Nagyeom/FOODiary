@@ -1,26 +1,16 @@
 import React, { useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Dimensions, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
+import { getClearData } from "../hooks/asyncStore";
+import Toast from "../Components/Toast";
 
 const { width, height } = Dimensions.get('window');
 
 const Settings = () => {
 
     const [isModaVisible, setIsModalVisible] = useState(false);
-
-    const clearAll = async () => {
-        try {
-            await AsyncStorage.clear()
-            console.log('삭제완료!');
-        } catch (e) {
-            // clear error
-        }
-        console.log('Done.')
-    }
-
-
+    const [isToastVisible, setIsToastVisible] = useState(false);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -105,15 +95,19 @@ const Settings = () => {
                         <TouchableOpacity 
                             style={[styles.btnComponent, {backgroundColor : '#5341E5'}]}
                             onPress={() => {
-                                clearAll
-                                setIsModalVisible(false)}}>
+                                getClearData()
+                                setIsModalVisible(false)
+                                setIsToastVisible(true)}}>
                             <Text style={[styles.commonText, {fontWeight : '700', color : '#fff'}]}>확인</Text>
                         </TouchableOpacity>
-
                         </View>
-                        
                     </View>
             </Modal>
+            <Toast 
+                text='데이터가 삭제되었습니다!'
+                visible={isToastVisible}
+                handleCancel={() => setIsToastVisible(false)}
+            />
         </SafeAreaView>
     )
 }
@@ -136,11 +130,11 @@ const styles = StyleSheet.create({
     showSetLayout: {
         marginTop: 40,
         justifyContent: 'center',
-        gap: 16,
     },
     showSetView: {
         paddingHorizontal: 32,
         borderBottomWidth: 1,
+        paddingVertical : 8,
         borderBottomColor: '#E8E8E8',
     },
 
