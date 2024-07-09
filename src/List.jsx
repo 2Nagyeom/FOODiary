@@ -56,11 +56,6 @@ const List = ({ navigation }) => {
                         item.storeImage.length > 0 ? (
                             <View style={{ flexDirection: 'row' }}>
                                 <Image source={{ uri: item.storeImage[0] }} style={styles.listImg} />
-                                {/* {item.storeImage.map((r, i) => {
-                                    return (
-                                        <Image key={i} source={{ uri: r }} style={styles.listImg} />
-                                    )
-                                })} */}
                             </View>
                         ) : (
                             <View style={{ flexDirection: 'row' }}>
@@ -170,7 +165,7 @@ const styles = StyleSheet.create({
     },
     optionSection: {
         width: width,
-        height: height * 0.04,
+        height: 40,
         flexDirection: 'row',
         justifyContent: 'space-between',
         // backgroundColor: '#F5F5F5'

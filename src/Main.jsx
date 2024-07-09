@@ -52,14 +52,18 @@ const Main = ({ route, navigation }) => {
         try {
             const res = await AsyncStorage.getItem('storeInfo')
             const jsonValue = JSON.parse(res)
-
-            const filteredStoreData = jsonValue.map(item => ({
-                latitude: item.storeGPS.latitude,
-                longitude: item.storeGPS.longitude,
-                storeOption: item.storeOption,
-                storeState : item.storeState
-            }))
-            setStoreMarkerList(filteredStoreData);
+            
+            if (jsonValue !== null) {
+                const filteredStoreData = jsonValue.map(item => ({
+                    latitude: item.storeGPS.latitude,
+                    longitude: item.storeGPS.longitude,
+                    storeOption: item.storeOption,
+                    storeState : item.storeState
+                }))
+                setStoreMarkerList(filteredStoreData);
+            } else {
+                setStoreMarkerList([]);
+            }
         } catch (e) {
             console.log('GET storeInfoList error =========> ', e);
         }
@@ -179,8 +183,10 @@ const Main = ({ route, navigation }) => {
                 // onCameraChanged={(args) => console.log(`Camera Changed: ${formatJson(args)}`)}
                 onTapMap={onTapMap}
             >
-                {
+                {   
+
                     storeMarkerList.map((value, index) => {
+                        console.log('storeMarkerList =====> ', storeMarkerList);
                         const image = getMarkerInfo(value.storeOption, value.storeState)
                     
                         return (
