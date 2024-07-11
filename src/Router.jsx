@@ -5,23 +5,43 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Splash from "./Splash";
 import Main from "./Main";
-import List from "./List";
+import List from "./AboutStore/List";
+import Detail from "./AboutStore/Detail";
 import Settings from "./Settings";
 import MoveBtn from "../Components/MoveBtn";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+const AboutStore = ({navigation}) => {
+    return (
+        <Tab.Navigator 
+            screenOptions={({ route }) => ({
+                tabBarStyle: { 
+                    position: 'absoulte', 
+                    backgroundColor: '#E9E9EB',
+                    display : 'none'},
+                headerShown: false,
+            })}>
+            <Tab.Screen  name="List" component={List} />
+            <Tab.Screen name='Detail' component={Detail} />
+        </Tab.Navigator>
+    )
+} 
+
 const BottomTab = ({ navigation }) => {
     return (
         <>
             <Tab.Navigator
                 screenOptions={({ route }) => ({
-                    tabBarStyle: { position: 'absoulte', backgroundColor: '#E9E9EB' },
+                    tabBarStyle: { 
+                        position: 'absoulte', 
+                        backgroundColor: '#E9E9EB'},
                     headerShown: false,
+                    
                     tabBarIcon: ({ focused }) => {
                         let iconName;
-                        if (route.name === 'List') {
+                        if (route.name === 'AboutStore') {
                             iconName = focused ? require('../assets/icons/listOnIcon.png') : require('../assets/icons/listOffIcon.png');
                         } else if (route.name === 'Settings') {
                             iconName = focused ? require('../assets/icons/settingOnIcon.png') : require('../assets/icons/settingOffIcon.png');
@@ -31,7 +51,7 @@ const BottomTab = ({ navigation }) => {
                     tabBarActiveTintColor: '#5341E5', // 포커스 될 때 타이틀 색상
                     tabBarInactiveTintColor: '#A5A5A7', // 포커스 되지 않았을 때 타이틀 색상
                 })}>
-                <Tab.Screen name="List" component={List} />
+                <Tab.Screen name="AboutStore" component={AboutStore} />
                 <Tab.Screen name="Settings" component={Settings} />
             </Tab.Navigator>
             <MoveBtn onPress={navigation.goBack} />

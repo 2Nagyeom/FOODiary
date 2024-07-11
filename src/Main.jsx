@@ -414,6 +414,7 @@ const Main = ({ route, navigation }) => {
                                             ...prev,
                                             mainLocation: '',
                                         }))
+                                        getStoreInfoList()
                                     }}>
                                     <Text style={[styles.text, { fontWeight: '700', fontSize: 16, color: '#fff' }]}>완료</Text>
                                 </TouchableOpacity>

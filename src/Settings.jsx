@@ -1,20 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Dimensions, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
-import { getClearData } from "../hooks/asyncStore";
+import { getClearData, getStoreData } from "../hooks/asyncStore";
 import Toast from "../Components/Toast";
 
 const { width, height } = Dimensions.get('window');
 
 const Settings = () => {
 
+    const [storeData, setStoreData] = useState([]);
     const [isModaVisible, setIsModalVisible] = useState(false);
     const [isToastVisible, setIsToastVisible] = useState(false);
 
+    useEffect(() => {
+        getStoreData();
+    })
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
-
+            
             <View style={styles.showStat}>
                 <View style={styles.statDetail}>
                     <Text style={[styles.commonText, { fontSize: 14, color: '#A5A5A7' }]}>
@@ -73,7 +78,6 @@ const Settings = () => {
                         <Image source={goInfoIcon} style={{ width: 9, height: 16 }} />
                     </TouchableOpacity>
                 </View>
-
             </View>
             <Modal
                 style={styles.modalLayout}
