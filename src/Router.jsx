@@ -13,22 +13,6 @@ import MoveBtn from "../Components/MoveBtn";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const AboutStore = ({navigation}) => {
-    return (
-        <Tab.Navigator 
-            screenOptions={({ route }) => ({
-                tabBarStyle: { 
-                    position: 'absoulte', 
-                    backgroundColor: '#E9E9EB',
-                    display : 'none'},
-                headerShown: false,
-            })}>
-            <Tab.Screen  name="List" component={List} />
-            <Tab.Screen name='Detail' component={Detail} />
-        </Tab.Navigator>
-    )
-} 
-
 const BottomTab = ({ navigation }) => {
     return (
         <>
@@ -41,7 +25,7 @@ const BottomTab = ({ navigation }) => {
                     
                     tabBarIcon: ({ focused }) => {
                         let iconName;
-                        if (route.name === 'AboutStore') {
+                        if (route.name === 'List') {
                             iconName = focused ? require('../assets/icons/listOnIcon.png') : require('../assets/icons/listOffIcon.png');
                         } else if (route.name === 'Settings') {
                             iconName = focused ? require('../assets/icons/settingOnIcon.png') : require('../assets/icons/settingOffIcon.png');
@@ -51,7 +35,7 @@ const BottomTab = ({ navigation }) => {
                     tabBarActiveTintColor: '#5341E5', // 포커스 될 때 타이틀 색상
                     tabBarInactiveTintColor: '#A5A5A7', // 포커스 되지 않았을 때 타이틀 색상
                 })}>
-                <Tab.Screen name="AboutStore" component={AboutStore} />
+                <Tab.Screen name="List" component={List} />
                 <Tab.Screen name="Settings" component={Settings} />
             </Tab.Navigator>
             <MoveBtn onPress={navigation.goBack} />
@@ -66,6 +50,7 @@ const Router = () => {
                 <Stack.Screen name='Splash' component={Splash} />
                 <Stack.Screen name='Main' component={Main} />
                 <Stack.Screen name='BottomTab' component={BottomTab} />
+                <Stack.Screen name='Detail' component={Detail} />
             </Stack.Navigator>
         </>
     )
