@@ -9,6 +9,7 @@ import List from "./AboutStore/List";
 import Detail from "./AboutStore/Detail";
 import Settings from "./Settings";
 import MoveBtn from "../Components/MoveBtn";
+import Version from "./Version";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,6 +52,7 @@ const Router = () => {
                 <Stack.Screen name='Main' component={Main} />
                 <Stack.Screen name='BottomTab' component={BottomTab} />
                 <Stack.Screen name='Detail' component={Detail} />
+                <Stack.Screen name='Version' component={Version} />
             </Stack.Navigator>
         </>
     )
