@@ -1,5 +1,18 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+export async function getStoreData() {
+    try {
+        const jsonValue = await AsyncStorage.getItem('storeInfo');
+
+        if (jsonValue !== null) {
+            return JSON.parse(jsonValue)
+        } else 
+            return []
+    } catch (e) {
+        console.log('error ========> ', e);
+    }
+}
+
 export async function getClearData() {
     try {
         await AsyncStorage.clear()
@@ -10,19 +23,6 @@ export async function getClearData() {
     console.log('Done.')
 }
 
-export async function getStoreData() {
-    try {
-        const jsonValue = await AsyncStorage.getItem('storeInfo');
-
-        if (jsonValue !== null) {
-            console.log('jsonValue =======> ', jsonValue);
-            return JSON.parse(jsonValue)
-        } else 
-            return []
-    } catch (e) {
-        console.log('error ========> ', e);
-    }
-}
 
 
 
