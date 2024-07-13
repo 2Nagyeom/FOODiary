@@ -8,17 +8,17 @@ const MoveBtn = ({onPress}) => {
             <TouchableOpacity 
                 style={styles.btnContainer}
                 onPress={onPress}>
-                <Image source={listBtnImg}  style={{width : 80, height : 80}}/>
+                <Image source={listBtnImg}  style={{width : 60, height : 60}}/>
             </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     btnContainer : {
-        zIndex : 9999, 
+        zIndex : 2, 
         position : 'absolute',
-        top : height * 0.86,
-        right : width / 2 - 40,
+        top : height * 0.88,
+        right : width / 2 - 30,
         
     },
     btn : {
