@@ -1,32 +1,61 @@
 import React, { useEffect, useState } from "react";
-
-import { Dimensions, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Linking } from "react-native";
 import Modal from "react-native-modal";
-import { getClearData, getStoreData } from "../hooks/asyncStore";
 import Toast from "../Components/Toast";
+import { getClearData, getStoreData } from "../hooks/asyncStore";
+import settingList from "../hooks/settingList";
 
 const { width, height } = Dimensions.get('window');
 
-const Settings = () => {
+const Settings = ({navigation}) => {
 
-    const [storeData, setStoreData] = useState([]);
+    const [writeLength, setWriteLength] = useState([]);
     const [isModaVisible, setIsModalVisible] = useState(false);
     const [isToastVisible, setIsToastVisible] = useState(false);
 
     useEffect(() => {
-        getStoreData();
-    })
+        contentShow()
+    }, [])
+
+    const contentShow = async () => {
+        const writeList = await getStoreData()
+        setWriteLength(writeList)
+    }
+
+    
+    const renderItem = ({item}) => {
+        const switchFunc = (flag, id) => {
+            if (flag == 'false') {
+                switch (id) {
+                    case 0 : {setIsModalVisible(true)} break
+                    case 5 : {navigation.navigate('Version')} break
+                }
+            } else {
+                Linking.openURL(item.link)
+            }
+        }
+    
+        return (
+            <View style={styles.showSetView}>
+                <TouchableOpacity
+                    style={styles.showSetContainer}
+                    onPress={() => switchFunc(item.flag, item.id)}>
+                    <Text style={styles.commonText}>{item.content}</Text>
+                    <Image source={item.icon} style={{ width: 9, height: 16 }} />
+                </TouchableOpacity>
+            </View>
+        )
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            
             <View style={styles.showStat}>
                 <View style={styles.statDetail}>
                     <Text style={[styles.commonText, { fontSize: 14, color: '#A5A5A7' }]}>
                         작성 글
                     </Text>
                     <Text style={[styles.commonText, { fontWeight: '700', fontSize: 24, color: '#5341E5' }]}>
-                        100
+                        {writeLength.length}
                     </Text>
                 </View>
                 <View style={{ width: 1, height: '100%', backgroundColor: '#E8E8E8' }} />
@@ -35,49 +64,17 @@ const Settings = () => {
                         즐겨찾기
                     </Text>
                     <Text style={[styles.commonText, { fontWeight: '700', fontSize: 24, color: '#5341E5' }]}>
-                        30
+                        {writeLength.filter(item => item.storeStar === 'YES').length}
                     </Text>
                 </View>
             </View>
             <View style={styles.showSetLayout}>
-                <View style={styles.showSetView}>
-                    <TouchableOpacity 
-                        style={styles.showSetContainer}
-                        onPress={() => setIsModalVisible(true)}>
-                        <Text style={styles.commonText}>데이터 삭제하기</Text>
-                        <Image source={goInfoIcon} style={{ width: 9, height: 16 }} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.showSetView}>
-                    <TouchableOpacity style={styles.showSetContainer}>
-                        <Text style={styles.commonText}>공지사항</Text>
-                        <Image source={goInfoIcon} style={{ width: 9, height: 16 }} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.showSetView}>
-                    <TouchableOpacity style={styles.showSetContainer}>
-                        <Text style={styles.commonText}>자주하는 질문</Text>
-                        <Image source={goInfoIcon} style={{ width: 9, height: 16 }} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.showSetView}>
-                    <TouchableOpacity style={styles.showSetContainer}>
-                        <Text style={styles.commonText}>1 : 1 문의</Text>
-                        <Image source={goInfoIcon} style={{ width: 9, height: 16 }} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.showSetView}>
-                    <TouchableOpacity style={styles.showSetContainer}>
-                        <Text style={styles.commonText}>이용약관</Text>
-                        <Image source={goInfoIcon} style={{ width: 9, height: 16 }} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.showSetView}>
-                    <TouchableOpacity style={styles.showSetContainer}>
-                        <Text style={styles.commonText}>앱 버전</Text>
-                        <Image source={goInfoIcon} style={{ width: 9, height: 16 }} />
-                    </TouchableOpacity>
-                </View>
+                <FlatList
+                    data={settingList}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    showsVerticalScrollIndicator={false}
+                />
             </View>
             <Modal
                 style={styles.modalLayout}
@@ -86,28 +83,29 @@ const Settings = () => {
                 animationIn='bounceIn'
                 animationOut='bounceOut'
                 onBackdropPress={() => setIsModalVisible(false)}>
-                    <View style={styles.modalView}>
-                        <Image source={warnIcon} style={{width : 48, height : 48}} />
-                        <Text style={[styles.commonText, {fontWeight : '600', fontSize : 18}]}>정말 모든 데이터를 <Text style={{color : '#5341E5'}}>삭제</Text>하실건가요?</Text>
-                        <Text style={[styles.commonText, {fontWeight : '600', fontSize : 14, color : '#A5A5A7'}]}>삭제된 데이터는 복구되지 않습니다.</Text>
-                        <View style={styles.btnView}>
-                        <TouchableOpacity 
-                            style={[styles.btnComponent, {backgroundColor : '#E6E5F2'}]}
+                <View style={styles.modalView}>
+                    <Image source={warnIcon} style={{ width: 48, height: 48 }} />
+                    <Text style={[styles.commonText, { fontWeight: '600', fontSize: 18 }]}>정말 모든 데이터를 <Text style={{ color: '#5341E5' }}>삭제</Text>하실건가요?</Text>
+                    <Text style={[styles.commonText, { fontWeight: '600', fontSize: 14, color: '#A5A5A7' }]}>삭제된 데이터는 복구되지 않습니다.</Text>
+                    <View style={styles.btnView}>
+                        <TouchableOpacity
+                            style={[styles.btnComponent, { backgroundColor: '#E6E5F2' }]}
                             onPress={() => setIsModalVisible(false)}>
-                            <Text style={[styles.commonText, {fontWeight : '700'}]}>취소</Text>
+                            <Text style={[styles.commonText, { fontWeight: '700' }]}>취소</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity 
-                            style={[styles.btnComponent, {backgroundColor : '#5341E5'}]}
+                        <TouchableOpacity
+                            style={[styles.btnComponent, { backgroundColor: '#5341E5' }]}
                             onPress={() => {
                                 getClearData()
                                 setIsModalVisible(false)
-                                setIsToastVisible(true)}}>
-                            <Text style={[styles.commonText, {fontWeight : '700', color : '#fff'}]}>확인</Text>
+                                setIsToastVisible(true)
+                            }}>
+                            <Text style={[styles.commonText, { fontWeight: '700', color: '#fff' }]}>확인</Text>
                         </TouchableOpacity>
-                        </View>
                     </View>
+                </View>
             </Modal>
-            <Toast 
+            <Toast
                 text='데이터가 삭제되었습니다!'
                 visible={isToastVisible}
                 handleCancel={() => setIsToastVisible(false)}
@@ -138,7 +136,7 @@ const styles = StyleSheet.create({
     showSetView: {
         paddingHorizontal: 32,
         borderBottomWidth: 1,
-        paddingVertical : 8,
+        paddingVertical: 8,
         borderBottomColor: '#E8E8E8',
     },
 
@@ -151,39 +149,38 @@ const styles = StyleSheet.create({
     commonText: {
         fontSize: 16,
     },
-    modalLayout : {
-        flex : 1,
-        alignItems : 'center',
-        justifyContent : 'center',
-    }, 
-    modalView : {
-        width : width * 0.84,
-        height : height * 0.24,
-        backgroundColor : '#fff',
-        paddingVertical : 16,
-        paddingHorizontal : 16,
-        gap : 12,
+    modalLayout: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalView: {
+        width: width * 0.84,
+        height: height * 0.24,
+        backgroundColor: '#fff',
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        gap: 12,
         // justifyContent : 'center',
-        alignItems : 'center',
-        borderRadius : 12,
+        alignItems: 'center',
+        borderRadius: 12,
     },
-    btnView : {
-        width : '100%',
-        marginTop : 'auto',
-        flexDirection : 'row',
-        justifyContent : 'space-between',
-        alignItems : 'center',
+    btnView: {
+        width: '100%',
+        marginTop: 'auto',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    btnComponent : {
-        width : '48%',
-        height : 40,
-        justifyContent :'center',
-        alignItems : 'center',
-        borderRadius : 8,
+    btnComponent: {
+        width: '48%',
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 8,
     }
 })
 
-const goInfoIcon = require('../assets/icons/goInfoIcon.png')
 const warnIcon = require('../assets/icons/warnIcon.png');
 
 export default Settings;
