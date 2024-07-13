@@ -24,16 +24,13 @@ const Settings = ({navigation}) => {
 
     
     const renderItem = ({item}) => {
-        const switchFunc = (flag, id) => {
-            if (flag == 'false') {
-                switch (id) {
-                    case 0 : {setIsModalVisible(true)} break
-                    case 5 : {navigation.navigate('Version')} break
+        const switchFunc = (flag) => {
+                switch (flag) {
+                    case 'LINK' : Linking.openURL(item.link); break 
+                    case 'DELETE' : setIsModalVisible(true); break
+                    case 'VERSION' : navigation.navigate('Version'); break
                 }
-            } else {
-                Linking.openURL(item.link)
-            }
-        }
+            } 
     
         return (
             <View style={styles.showSetView}>
