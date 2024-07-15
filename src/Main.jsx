@@ -58,7 +58,8 @@ const Main = ({ route, navigation }) => {
                     latitude: item.storeGPS.latitude,
                     longitude: item.storeGPS.longitude,
                     storeOption: item.storeOption,
-                    storeState : item.storeState
+                    storeState : item.storeState,
+                    storeImage : item.storeImage[0]
                 }))
                 setStoreMarkerList(filteredStoreData);
             } else {
@@ -196,6 +197,7 @@ const Main = ({ route, navigation }) => {
                                 longitude={value.longitude}
                                 width={60}
                                 height={60}
+                                // image={require('./marker.png')}
                                 image={image}
                                 onTap={() => console.log('Tap!!', value)}
                             />

@@ -9,15 +9,29 @@ const { width, height } = Dimensions.get('window')
 const storeOptions = ['전체', '음식점', '카페', '바'];
 
 const List = ({ navigation }) => {
+    const [initialList, setInitialList] = useState([]);
     const [storeList, setStoreList] = useState([]);
     const [storeOption, setStoreOption] = useState(storeOptions[0]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [clickedItemId, setClickedItemId] = useState(null);
+    const [searchContent, setSearchContent] = useState('');
 
 
     useEffect(() => {
-        getData()
+        getData();
     }, []);
+
+    useEffect(() => {
+        let filteredData = initialList;
+
+        if (storeOption !== '전체') {
+            filteredData = filteredData.filter((v) => v.storeOption == storeOption);
+        }
+        if (searchContent !== '') {
+            filteredData = filteredData.filter((v) => v.storeName.includes(searchContent));
+        }
+        setStoreList(filteredData);
+    }, [storeOption, searchContent])
 
     const getData = async () => {
         try {
@@ -25,14 +39,15 @@ const List = ({ navigation }) => {
 
             if (jsonValue !== null) {
                 setStoreList(JSON.parse(jsonValue));
+                setInitialList(JSON.parse(jsonValue))
             }
         } catch (e) {
             console.log('error ========> ', e);
         }
     };
 
-    const storeOptionItem = (item) => {
-        setStoreOption(item)
+    const storeOptionItem = (option) => {
+        setStoreOption(option)
     }
 
     const optionItem = ({ item }) => {
@@ -52,7 +67,7 @@ const List = ({ navigation }) => {
         const storeDate = dayjs(item.storeDate).format('YYYY.MM.DD')
         const isClickCard = clickedItemId === index;
 
-        return ( 
+        return (
             isClickCard ? (
                 <View style={styles.listDetialContainer}>
                     <View style={styles.listContentView}>
@@ -64,10 +79,10 @@ const List = ({ navigation }) => {
                                     <Text style={[styles.commonText, { fontWeight: '600', fontSize: 12, marginTop: "auto", color: '#A5A5A7' }]}>{storeDate} 날 방문</Text>
                                 </View>
                             </View>
-                            <View style={{ width: width-16, height: 1, backgroundColor: '#A5A5A7' }} />
+                            <View style={{ width: width - 16, height: 1, backgroundColor: '#A5A5A7' }} />
                             <ScrollView
                                 showsVerticalScrollIndicator={false}>
-                                <View style={{gap: 16}}>
+                                <View style={{ gap: 16 }}>
                                     <View style={{ gap: 6 }}>
                                         <Text>매장 주소</Text>
                                         <View>
@@ -110,7 +125,7 @@ const List = ({ navigation }) => {
                                     </View>
                                 </View>
                             </ScrollView>
-                            <View style={{ width : width-16, justifyContent: 'space-between', alignItems : 'center', flexDirection: 'row', marginTop: 'auto' }}>
+                            <View style={{ width: width - 16, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', marginTop: 'auto' }}>
                                 <TouchableOpacity
                                     style={styles.goModifiy}
                                     onPress={() => navigation.navigate('Detail', item)}>
@@ -180,7 +195,8 @@ const List = ({ navigation }) => {
                 <View style={styles.searchBar}>
                     <TextInput
                         style={{ width: '80%' }}
-                        placeholder="매장명 또는 주소를 입력하세요 !"
+                        placeholder="매장명을 입력하세요 !"
+                        onChangeText={(text) => setSearchContent(text)}
                     />
                     <TouchableOpacity>
                         <Image source={searchIcon} style={{ width: 24, height: 24 }} />
@@ -297,14 +313,14 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontSize: 16,
     },
-    goModifiy : {
-        width : 64, 
-        height : 22,
+    goModifiy: {
+        width: 64,
+        height: 22,
         justifyContent: 'center',
         alignItems: 'center',
-        padding : 4,
-        borderRadius : 6, 
-        backgroundColor : '#5341E5'
+        padding: 4,
+        borderRadius: 6,
+        backgroundColor: '#5341E5'
     },
     viewMoreBtn: {
         width: 80,
@@ -335,9 +351,9 @@ const styles = StyleSheet.create({
     commonText: {
         fontSize: 12,
     },
-    listCardText : {
-        fontSize : 14,
-        fontWeight : '600',
+    listCardText: {
+        fontSize: 14,
+        fontWeight: '600',
     },
 })
 
