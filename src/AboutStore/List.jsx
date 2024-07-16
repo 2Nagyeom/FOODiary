@@ -125,18 +125,13 @@ const List = ({ navigation }) => {
                                     </View>
                                 </View>
                             </ScrollView>
-                            {/* <View style={{ width: width - 16, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', marginTop: 'auto' }}>
-                                <TouchableOpacity
-                                    style={styles.goModifiy}
-                                    onPress={() => navigation.navigate('Detail', item)}>
-                                    <Text style={[styles.commonText, { fontWeight: '700', fontSize: 12, color: '#fff' }]}>수정하기</Text>
-                                </TouchableOpacity>
+                            <View style={{ width: width - 16, justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', marginTop: 'auto' }}>
                                 <TouchableOpacity
                                     onPress={() => setClickedItemId(null)}
                                 >
                                     <Image source={goListIcon} style={{ width: 18, height: 10 }} />
                                 </TouchableOpacity>
-                            </View> */}
+                            </View>
                         </View>
                     </View >
                 </View >
