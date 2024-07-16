@@ -125,7 +125,7 @@ const List = ({ navigation }) => {
                                     </View>
                                 </View>
                             </ScrollView>
-                            <View style={{ width: width - 16, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', marginTop: 'auto' }}>
+                            {/* <View style={{ width: width - 16, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', marginTop: 'auto' }}>
                                 <TouchableOpacity
                                     style={styles.goModifiy}
                                     onPress={() => navigation.navigate('Detail', item)}>
@@ -136,7 +136,7 @@ const List = ({ navigation }) => {
                                 >
                                     <Image source={goListIcon} style={{ width: 18, height: 10 }} />
                                 </TouchableOpacity>
-                            </View>
+                            </View> */}
                         </View>
                     </View >
                 </View >

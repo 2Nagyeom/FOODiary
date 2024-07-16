@@ -5,6 +5,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
+
 import storeGEO from "../APIs/storeGEO";
 import ListBtn from "../Components/MoveBtn";
 
@@ -38,6 +39,9 @@ const Main = ({ route, navigation }) => {
 
     useEffect(() => {
         getStoreInfoList()
+    }, [storeMarkerList]);
+
+    useEffect(() => {
         if (showModal) {
             setIsModalVisible(true)
         }
@@ -52,8 +56,10 @@ const Main = ({ route, navigation }) => {
         try {
             const res = await AsyncStorage.getItem('storeInfo')
             const jsonValue = JSON.parse(res)
+
+            console.log('jsonValue =======> ', jsonValue);
             
-            if (jsonValue !== null) {
+            if (jsonValue !== null) {          
                 const filteredStoreData = jsonValue.map(item => ({
                     latitude: item.storeGPS.latitude,
                     longitude: item.storeGPS.longitude,
@@ -61,14 +67,32 @@ const Main = ({ route, navigation }) => {
                     storeState : item.storeState,
                     storeImage : item.storeImage[0]
                 }))
+                console.log('filteredStoreData =======> ', filteredStoreData);
                 setStoreMarkerList(filteredStoreData);
             } else {
+                console.log('storeMarkerList =========> 빈배열!!!!!');
                 setStoreMarkerList([]);
             }
         } catch (e) {
             console.log('GET storeInfoList error =========> ', e);
         }
     }
+    
+    const storeData = async (value) => {
+        try {
+            const existStore = await AsyncStorage.getItem('storeInfo');
+            let storeList = [];
+
+            if (existStore !== null) {
+                storeList = JSON.parse(existStore);
+            }
+            storeList.push(value);
+            await AsyncStorage.setItem('storeInfo', JSON.stringify(storeList));
+            console.log('값 저장 완료!!', storeList);
+        } catch (e) {
+            console.log('값 전송 오류!', e);
+        }
+    };
 
     const getRes = async (location) => {
         const res = await storeGEO.GAPI(location);
@@ -95,21 +119,6 @@ const Main = ({ route, navigation }) => {
         setIsModalVisible(true);
     }
 
-    const storeData = async (value) => {
-        try {
-            const existStore = await AsyncStorage.getItem('storeInfo');
-            let storeList = [];
-
-            if (existStore !== null) {
-                storeList = JSON.parse(existStore);
-            }
-            storeList.push(value);
-            await AsyncStorage.setItem('storeInfo', JSON.stringify(storeList));
-            console.log('값 저장 완료!!', storeList);
-        } catch (e) {
-            console.log('값 전송 오류!', e);
-        }
-    };
 
     const getMarkerInfo = (storeOption, storeState) => {
         switch(storeState) {
@@ -410,12 +419,12 @@ const Main = ({ route, navigation }) => {
                                 <TouchableOpacity
                                     style={[styles.inputContainer, {}]}
                                     onPress={() => {
-                                        storeData(storeInfo)
-                                        setIsModalVisible(false)
                                         setStoreInfo(prev => ({
                                             ...prev,
                                             mainLocation: '',
                                         }))
+                                        storeData(storeInfo)
+                                        setIsModalVisible(false)
                                         getStoreInfoList()
                                     }}>
                                     <Text style={[styles.text, { fontWeight: '700', fontSize: 16, color: '#fff' }]}>완료</Text>

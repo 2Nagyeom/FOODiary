@@ -2,15 +2,65 @@ import React, {useState} from "react";
 import { SafeAreaView, ScrollView, TextInput, View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from "react-native";
 import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const {width, height} = Dimensions.get('window');
 
 const Detail = ({navigation, route}) => {
-    console.log('route params =======> ', route);
-    const {mainLocation, subLocation, storeName, storeComment, storeState, storeImage, storeStar, storeOption} = route.params
+    // console.log('route params =======> ', route);
+    const {storeGPS, mainLocation, subLocation, storeName, storeComment, storeState, storeImage, storeStar, storeOption} = route.params
 
     const [date, setDate] = useState(new Date())
+
+    const [editStoreInfo, setEditStoreInfo] = useState({
+        storeGPS: {
+            latitude: storeGPS.latitude,
+            longitude: storeGPS.longitude,
+        },
+        mainLocation: mainLocation,
+        subLocation: subLocation,
+        storeName: storeName,
+        storeDate: date,
+        storeOption: storeOption,
+        storeState: storeState,
+        storeComment: storeComment,
+        storeImage: storeImage,
+        storeStar: storeStar
+    })
+    
+    const submitEditInfo = async () => {
+        console.log('editStoreInfo ======> ', editStoreInfo);
+        console.log('route.params ======> ', route.params); 
+        try {
+            const jsonValue = await AsyncStorage.getItem('storeInfo');
+            const storeInfo = JSON.parse(jsonValue);
+            const updatedStoreInfo = { ...storeInfo, ...editStoreInfo };
+            await AsyncStorage.setItem('storeInfo', JSON.stringify(updatedStoreInfo));
+            console.log('success edit storeInfo');
+        } catch (error) {
+            console.error('failed edit storeInfo', error);
+        }
+    } 
+
+    const onChangeValue = (obj, value) => {
+        setEditStoreInfo(prev => ({
+            ...prev, 
+            [obj]: value }
+        ))
+    }
+
+    const onPickImg = () => {
+        ImagePicker.openPicker({
+            multiple: true
+        }).then(images => {
+            setEditStoreInfo(prev => ({
+                ...prev,
+                storeImage: (images.map(v => v.sourceURL))
+            }))
+        });
+    }
+
 
     return (
         <SafeAreaView style={{flex : 1, backgroundColor : "#fff"}}>
@@ -19,7 +69,8 @@ const Detail = ({navigation, route}) => {
                     onPress={() => navigation.goBack()}>
                         <Image source={backIcon} style={{width : 10, height : 16}} />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => submitEditInfo()}>
                     <Text style={[styles.commonText, {color : '#5341E5'}]}>수정완료</Text>
                 </TouchableOpacity>
             </View>
@@ -31,10 +82,10 @@ const Detail = ({navigation, route}) => {
                             <View style={[styles.gapView, { height: 240 }]}>
                                 <Text style={styles.text}>매장 주소</Text>
                                 <View style={{ gap: 4 }}>
-                                            <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{mainLocation}</Text>
+                                            <Text style={[styles.text, { fontWeight: '700', fontSize: 16 }]}>{editStoreInfo.mainLocation}</Text>
                                     <TouchableOpacity
                                         onPress={() => navigation.navigate('Post')}>
-                                        <Text style={[styles.text, { fontWeight: '700', fontSize: 12, color: '#AAAAAA' }]}>이 주소가 아니신가요?</Text>
+                                        <Text style={[styles.text, { fontWeight: '700', fontSize: 12, color: '#AAAAAA' }]}>주소 바꾸기</Text>
                                     </TouchableOpacity>
                                 </View>
                                 <View style={{ marginTop: 16, gap: 12 }}>
@@ -42,7 +93,7 @@ const Detail = ({navigation, route}) => {
                                         <Text style={styles.text}>자세한 주소를 입력해주세요!</Text>
                                         <TextInput
                                             style={styles.shopTextInput}
-                                            placeholder={subLocation}
+                                            placeholder={editStoreInfo.subLocation}
                                             onChangeText={value => onChangeValue('subLocation', value)}
                                         />
                                     </View>
@@ -50,7 +101,7 @@ const Detail = ({navigation, route}) => {
                                         <Text style={styles.text}>매장명을 입력해주세요!</Text>
                                         <TextInput
                                             style={styles.shopTextInput}
-                                            placeholder={storeName}
+                                            placeholder={editStoreInfo.storeName}
                                             onChangeText={value => onChangeValue('storeName', value)}
                                         />
                                     </View>
@@ -61,6 +112,7 @@ const Detail = ({navigation, route}) => {
                                 <View style={styles.datePickerContainer}>
                                     <DatePicker
                                         date={date}
+                                        maximumDate={date}
                                         minuteInterval={5}
                                         locale='kor'
                                         onDateChange={setDate} />
@@ -71,20 +123,20 @@ const Detail = ({navigation, route}) => {
                                 <View style={{ alignItems: 'center', flexDirection: 'row', gap: 16 }}>
                                     <TouchableOpacity
                                         style={
-                                            storeOption == '음식점' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                            editStoreInfo.storeOption == '음식점' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
                                         onPress={() => onChangeValue('storeOption', '음식점')}>
                                         <Image source={foodIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeOption == '음식점' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            editStoreInfo.storeOption == '음식점' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>음식점</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={
-                                            storeOption == '카페' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
+                                            editStoreInfo.storeOption == '카페' ? styles.optionPickerComponent : [styles.optionPickerComponent, { borderColor: '#A5A5A7' }]}
                                         onPress={() => onChangeValue('storeOption', '카페')}>
                                         <Image source={cafeIcon} style={{ width: 80, height: 80 }} />
                                         <Text style={
-                                            storeOption == '카페' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            editStoreInfo.storeOption == '카페' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>카페</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
@@ -106,10 +158,10 @@ const Detail = ({navigation, route}) => {
                                         onPress={() => onChangeValue('storeState', 'GOOD')}
                                     >
                                         <Text style={
-                                            storeState == 'GOOD' ? [styles.text, { fontSize: 48 }]
+                                            editStoreInfo.storeState == 'GOOD' ? [styles.text, { fontSize: 48 }]
                                                 : [styles.text, { fontSize: 40 }]}>😍</Text>
                                         <Text style={
-                                            storeState == 'GOOD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            editStoreInfo.storeState == 'GOOD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { fontWeight: '500', color: '#A5A5A7' }]}>좋았어요!</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
@@ -117,10 +169,10 @@ const Detail = ({navigation, route}) => {
                                         onPress={() => onChangeValue('storeState', 'COMMON')}
                                     >
                                         <Text style={
-                                            storeState == 'COMMON' ? [styles.text, { fontSize: 48 }]
+                                            editStoreInfo.storeState == 'COMMON' ? [styles.text, { fontSize: 48 }]
                                                 : [styles.text, { fontSize: 40 }]}>🙂</Text>
                                         <Text style={
-                                            storeState == 'COMMON' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            editStoreInfo.storeState == 'COMMON' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { fontWeight: '500', color: '#A5A5A7' }]}>보통이에요!</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
@@ -128,10 +180,10 @@ const Detail = ({navigation, route}) => {
                                         onPress={() => onChangeValue('storeState', 'BAD')}
                                     >
                                         <Text style={
-                                            storeState == 'BAD' ? [styles.text, { fontSize: 48 }]
+                                            editStoreInfo.storeState == 'BAD' ? [styles.text, { fontSize: 48 }]
                                                 : [styles.text, { fontSize: 40 }]}>😠</Text>
                                         <Text style={
-                                            storeState == 'BAD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
+                                            editStoreInfo.storeState == 'BAD' ? [styles.text, { fontWeight: '700', color: '#5341E5' }]
                                                 : [styles.text, { fontWeight: '500', color: '#A5A5A7' }]}>별로에요!</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -140,7 +192,7 @@ const Detail = ({navigation, route}) => {
                                 <Text style={styles.text}>매장에 대한 이야기를 써주세요!</Text>
                                 <TextInput
                                     style={styles.shopDetailText}
-                                    placeholder={storeComment}
+                                    placeholder={editStoreInfo.storeComment}
                                     textAlignVertical="top"
                                     multiline={true}
                                     numberOfLines={100}
@@ -150,7 +202,7 @@ const Detail = ({navigation, route}) => {
                             <View style={[styles.gapView, { gap: 4, height: 180 }]}>
                                 <Text style={styles.text}>매장에 대한 사진을 등록해주세요!</Text>
                                 {
-                                    storeImage.length > 0 ? (
+                                    editStoreInfo.storeImage.length > 0 ? (
                                         <>
                                             <ScrollView
                                                 showsHorizontalScrollIndicator={false}
@@ -175,20 +227,20 @@ const Detail = ({navigation, route}) => {
                                 <View style={styles.chooseView}>
                                     <TouchableOpacity
                                         style={
-                                            storeStar == 'YES' ? [styles.chooseContainer, { backgroundColor: '#5341E5', borderTopLeftRadius: 6, borderBottomLeftRadius: 6 }]
+                                            editStoreInfo.storeStar == 'YES' ? [styles.chooseContainer, { backgroundColor: '#5341E5', borderTopLeftRadius: 6, borderBottomLeftRadius: 6 }]
                                                 : [styles.chooseContainer, { borderTopLeftRadius: 6, borderBottomLeftRadius: 6 }]}
                                         onPress={() => onChangeValue('storeStar', 'YES')}>
                                         <Text style={
-                                            storeStar == 'YES' ? [styles.text, { fontWeight: '600', color: '#fff' }]
+                                            editStoreInfo.storeStar == 'YES' ? [styles.text, { fontWeight: '600', color: '#fff' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>할래요!</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={
-                                            storeStar == 'NO' ? [styles.chooseContainer, { backgroundColor: '#5341E5', borderTopRightRadius: 6, borderBottomRightRadius: 6 }] :
+                                            editStoreInfo.storeStar == 'NO' ? [styles.chooseContainer, { backgroundColor: '#5341E5', borderTopRightRadius: 6, borderBottomRightRadius: 6 }] :
                                                 [styles.chooseContainer, { borderTopRightRadius: 6, borderBottomRightRadius: 6 }]}
                                         onPress={() => onChangeValue('storeStar', 'NO')}>
                                         <Text style={
-                                            storeStar == 'NO' ? [styles.text, { fontWeight: '600', color: '#fff' }]
+                                            editStoreInfo.storeStar == 'NO' ? [styles.text, { fontWeight: '600', color: '#fff' }]
                                                 : [styles.text, { color: '#A5A5A7' }]}>안할래요!</Text>
                                     </TouchableOpacity>
                                 </View>

@@ -13,7 +13,7 @@ export async function getStoreData() {
     }
 }
 
-export async function getClearData() {
+export async function clearStoreData() {
     try {
         await AsyncStorage.clear()
         console.log('삭제완료!');

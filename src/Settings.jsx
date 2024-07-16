@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Linking } from "react-native";
 import Modal from "react-native-modal";
 import Toast from "../Components/Toast";
-import { getClearData, getStoreData } from "../hooks/asyncStore";
+import { clearStoreData, getStoreData } from "../hooks/asyncStore";
 import settingList from "../hooks/settingList";
 
 const { width, height } = Dimensions.get('window');
@@ -19,7 +19,11 @@ const Settings = ({navigation}) => {
 
     const contentShow = async () => {
         const writeList = await getStoreData()
-        setWriteLength(writeList)
+        if (writeList.length === 0) {
+            setWriteLength([])
+        }  else  {
+            setWriteLength(writeList)
+        }
     }
 
     
@@ -93,7 +97,7 @@ const Settings = ({navigation}) => {
                         <TouchableOpacity
                             style={[styles.btnComponent, { backgroundColor: '#5341E5' }]}
                             onPress={() => {
-                                getClearData()
+                                clearStoreData()
                                 setIsModalVisible(false)
                                 setIsToastVisible(true)
                             }}>
