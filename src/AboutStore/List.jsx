@@ -20,11 +20,11 @@ const List = ({ navigation }) => {
 
     useEffect(() => {
         getData();
-    }, [isNew]);
+    }, []);
 
     useEffect(() => {
         filterOptionList()
-    }, [storeOption, searchContent])
+    }, [storeOption, searchContent, isNew])
 
     const getData = async () => {
         try {
@@ -32,8 +32,8 @@ const List = ({ navigation }) => {
 
             if (jsonValue !== null) {
                 setStoreList(JSON.parse(jsonValue));
-                setInitialList(JSON.parse(jsonValue)) 
-                selectTimeList()
+                setInitialList(JSON.parse(jsonValue))
+
             }
         } catch (e) {
             console.log('error ========> ', e);
@@ -48,12 +48,14 @@ const List = ({ navigation }) => {
         }
         if (searchContent !== '') {
             filteredData = filteredData.filter((v) => v.storeName.includes(searchContent));
+            selectTimeList(filteredData)
         }
-        setStoreList(filteredData);
+        selectTimeList(filteredData);
     }
 
-    const selectTimeList = () => {
-        let sortedList = [...initialList];
+    const selectTimeList = (dataList) => {
+        let sortedList = [...dataList];
+        console.log(sortedList);
         sortedList.sort((a, b) => {
             const dateA = dayjs(a.storeDate); // 각 항목의 날짜를 가져온다고 가정
             const dateB = dayjs(b.storeDate);
