@@ -4,6 +4,7 @@ import { NaverMapMarkerOverlay, NaverMapView } from "@mj-studio/react-native-nav
 import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Geolocation from '@react-native-community/geolocation';
 import Modal from "react-native-modal";
 
 import storeGEO from "../APIs/storeGEO";
@@ -39,45 +40,34 @@ const Main = ({ route, navigation }) => {
 
     useEffect(() => {
         getStoreInfoList()
-    }, [storeMarkerList]);
+    }, []);
 
     useEffect(() => {
-        if (showModal) {
-            setIsModalVisible(true)
-        }
-        if (newLocation) {
-            getRes(newLocation)
-            setSaveLocation(newLocation)
-        }
+        isKeepModal()
     }, [showModal, newLocation]);
-
 
     const getStoreInfoList = async () => {
         try {
             const res = await AsyncStorage.getItem('storeInfo')
             const jsonValue = JSON.parse(res)
 
-            console.log('jsonValue =======> ', jsonValue);
-            
-            if (jsonValue !== null) {          
+            if (jsonValue !== null) {
                 const filteredStoreData = jsonValue.map(item => ({
                     latitude: item.storeGPS.latitude,
                     longitude: item.storeGPS.longitude,
                     storeOption: item.storeOption,
-                    storeState : item.storeState,
-                    storeImage : item.storeImage[0]
+                    storeState: item.storeState,
+                    storeImage: item.storeImage[0]
                 }))
-                console.log('filteredStoreData =======> ', filteredStoreData);
                 setStoreMarkerList(filteredStoreData);
             } else {
-                console.log('storeMarkerList =========> 빈배열!!!!!');
                 setStoreMarkerList([]);
             }
         } catch (e) {
             console.log('GET storeInfoList error =========> ', e);
         }
     }
-    
+
     const storeData = async (value) => {
         try {
             const existStore = await AsyncStorage.getItem('storeInfo');
@@ -89,6 +79,8 @@ const Main = ({ route, navigation }) => {
             storeList.push(value);
             await AsyncStorage.setItem('storeInfo', JSON.stringify(storeList));
             console.log('값 저장 완료!!', storeList);
+
+            getStoreInfoList()
         } catch (e) {
             console.log('값 전송 오류!', e);
         }
@@ -105,7 +97,18 @@ const Main = ({ route, navigation }) => {
         }))
     }
 
+    const isKeepModal = () => {
+        if (showModal) {
+            setIsModalVisible(true)
+        }
+        if (newLocation) {
+            getRes(newLocation)
+            setSaveLocation(newLocation)
+        }
+    }
+
     const onTapMap = async event => {
+        Geolocation.getCurrentPosition()
         const res = await storeGEO.REGAPI(event.latitude, event.longitude)
 
         setStoreInfo(prev => ({
@@ -121,22 +124,22 @@ const Main = ({ route, navigation }) => {
 
 
     const getMarkerInfo = (storeOption, storeState) => {
-        switch(storeState) {
-            case 'GOOD' :
+        switch (storeState) {
+            case 'GOOD':
                 if (storeOption === '음식점') return foodAIcon
                 else if (storeOption === '카페') return cafeAIcon
                 else return barAIcon
-            case 'COMMON' : 
+            case 'COMMON':
                 if (storeOption === '음식점') return foodBIcon
                 else if (storeOption === '카페') return cafeBIcon
                 else return barBIcon
-            case 'BAD' : 
+            case 'BAD':
                 if (storeOption === '음식점') return foodCIcon
                 else if (storeOption === '카페') return cafeCIcon
                 else return barCIcon
-            default : 
+            default:
                 return defaultAIcon
-        }   
+        }
     }
 
     const handleOnScroll = event => {
@@ -180,7 +183,7 @@ const Main = ({ route, navigation }) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
             <NaverMapView
                 ref={mapRef}
-                style={{ width: width, height: height }}
+                style={{ flex: 1 }}
                 initialRegion={{
                     latitude: 35.1578157,
                     longitude: 129.0600331,
@@ -188,24 +191,25 @@ const Main = ({ route, navigation }) => {
                     longitudeDelta: 0.0028
                 }}
                 isShowLocationButton={true}
+                isIndoorEnabled={true}
+
                 // onInitialized={() => console.log('initialized!')}
                 // onOptionChanged={() => console.log('Option Changed!')}
                 // onCameraChanged={(args) => console.log(`Camera Changed: ${formatJson(args)}`)}
                 onTapMap={onTapMap}
             >
-                {   
+                {
 
                     storeMarkerList.map((value, index) => {
-                        console.log('storeMarkerList =====> ', storeMarkerList);
                         const image = getMarkerInfo(value.storeOption, value.storeState)
-                    
+
                         return (
                             <NaverMapMarkerOverlay
                                 key={index}
                                 latitude={value.latitude}
                                 longitude={value.longitude}
-                                width={60}
-                                height={60}
+                                width={40}
+                                height={40}
                                 // image={require('./marker.png')}
                                 image={image}
                                 onTap={() => console.log('Tap!!', value)}
