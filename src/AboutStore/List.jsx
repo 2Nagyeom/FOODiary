@@ -15,13 +15,32 @@ const List = ({ navigation }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [clickedItemId, setClickedItemId] = useState(null);
     const [searchContent, setSearchContent] = useState('');
+    const [isNew, setIsNew] = useState(true);
 
 
     useEffect(() => {
         getData();
-    }, []);
+    }, [isNew]);
 
     useEffect(() => {
+        filterOptionList()
+    }, [storeOption, searchContent])
+
+    const getData = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('storeInfo');
+
+            if (jsonValue !== null) {
+                setStoreList(JSON.parse(jsonValue));
+                setInitialList(JSON.parse(jsonValue)) 
+                selectTimeList()
+            }
+        } catch (e) {
+            console.log('error ========> ', e);
+        }
+    };
+
+    const filterOptionList = () => {
         let filteredData = initialList;
 
         if (storeOption !== '전체') {
@@ -31,20 +50,23 @@ const List = ({ navigation }) => {
             filteredData = filteredData.filter((v) => v.storeName.includes(searchContent));
         }
         setStoreList(filteredData);
-    }, [storeOption, searchContent])
+    }
 
-    const getData = async () => {
-        try {
-            const jsonValue = await AsyncStorage.getItem('storeInfo');
-
-            if (jsonValue !== null) {
-                setStoreList(JSON.parse(jsonValue));
-                setInitialList(JSON.parse(jsonValue))
+    const selectTimeList = () => {
+        let sortedList = [...initialList];
+        sortedList.sort((a, b) => {
+            const dateA = dayjs(a.storeDate); // 각 항목의 날짜를 가져온다고 가정
+            const dateB = dayjs(b.storeDate);
+            
+            if (isNew) {
+                return dateB.diff(dateA);
+            } else {
+                return dateA.diff(dateB);
             }
-        } catch (e) {
-            console.log('error ========> ', e);
-        }
+        })
+        setStoreList(sortedList);
     };
+
 
     const storeOptionItem = (option) => {
         setStoreOption(option)
@@ -210,12 +232,25 @@ const List = ({ navigation }) => {
                 />
                 <View style={{ flex: 1, height: '100%', borderBottomWidth: 2, borderBottomColor: '#DCDCDC' }} />
             </View>
+            <View style={styles.listOptionSectionConatainer}>
+                <View style={styles.listOptionView}>
+                    <TouchableOpacity 
+                        style={isNew == true ? styles.listOptionBtn : {paddingLeft : 4}}
+                        onPress={() => setIsNew(true)}>
+                        <Text style={isNew == true ? styles.listOptionText : {color : '#5341e4'}}>최신순</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={isNew == false ? styles.listOptionBtn : {paddingRight : 4}}
+                        onPress={() => setIsNew(false)}>
+                        <Text style={isNew == false ? styles.listOptionText : {color : '#5341e4'}}>오래된 순</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
             <FlatList
                 data={storeList}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
                 showsHorizontalScrollIndicator={false}
-                style={{ marginTop: 10 }}
             />
             <Modal
                 isVisible={isModalVisible}
@@ -290,6 +325,34 @@ const styles = StyleSheet.create({
         paddingLeft: 8,
         paddingRight: 16,
         paddingVertical: 12,
+    },
+    listOptionSectionConatainer : {
+        height : 44,
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        paddingHorizontal: 8,
+    },
+    listOptionView : { 
+        justifyContent: 'soace-between',
+        alignItems: 'center',
+        flexDirection: 'row',
+        borderRadius : 12,
+        borderColor : '#5341E5',
+        borderWidth : 1,
+        gap : 6,
+    },
+    listOptionBtn : {
+        height : 20,
+        alignItems : 'center',
+        justifyContent : 'center',
+        backgroundColor : '#5341E5',
+        borderRadius : 12,
+        paddingHorizontal : 4,
+    },
+    listOptionText : {
+        color : '#fff',
+        fontWeight : '700',
+        fontSize : 14
     },
     listContentView: {
         height: '100%',
