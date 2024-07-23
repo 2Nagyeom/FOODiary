@@ -41,7 +41,7 @@ const Main = ({ route, navigation }) => {
     useEffect(() => {
         Geolocation.getCurrentPosition(info => console.log(info))
         getStoreInfoList()
-    }, []);
+    }, [storeMarkerList]);
 
     useEffect(() => {
         isKeepModal()

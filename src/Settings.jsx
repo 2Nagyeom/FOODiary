@@ -157,9 +157,9 @@ const styles = StyleSheet.create({
     },
     modalView: {
         width: width * 0.84,
-        height: height * 0.24,
+        height: height * 0.28,
         backgroundColor: '#fff',
-        paddingTop: 16,
+        paddingVertical: 16,
         paddingHorizontal: 16,
         gap: 12,
         // justifyContent : 'center',
@@ -167,12 +167,13 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     btnView: {
-        width: '100%',
-        height : '40%',
-        marginTop: 'auto',
+        width: 328,
+        height : 34,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginTop: 'auto',
+        paddingHorizontal: 16,
     },
     btnComponent: {
         width: '48%',
