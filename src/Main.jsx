@@ -41,7 +41,7 @@ const Main = ({ route, navigation }) => {
 
     useEffect(() => {
         getStoreInfoList()
-    }, []);
+    }, [storeMarkerList]);
     
     useEffect(() => {
         isKeepModal()
