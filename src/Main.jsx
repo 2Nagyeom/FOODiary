@@ -4,7 +4,6 @@ import { NaverMapMarkerOverlay, NaverMapView } from "@mj-studio/react-native-nav
 import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Geolocation from '@react-native-community/geolocation';
 import Modal from "react-native-modal";
 
 import storeGEO from "../APIs/storeGEO";
@@ -13,6 +12,8 @@ import ListBtn from "../Components/MoveBtn";
 const { width, height } = Dimensions.get('screen');
 
 const Main = ({ route, navigation }) => {
+    console.log('Main ========> ', route.params.params);
+    const {latitude, longitude} = route.params.params
     const { newLocation = '', showModal = false } = route.params || {}
 
     const mapRef = useRef(null);
@@ -39,13 +40,14 @@ const Main = ({ route, navigation }) => {
     const [storeMarkerList, setStoreMarkerList] = useState([]);
 
     useEffect(() => {
-        Geolocation.getCurrentPosition(info => console.log(info))
         getStoreInfoList()
-    }, [storeMarkerList]);
-
+    }, []);
+    
     useEffect(() => {
         isKeepModal()
     }, [showModal, newLocation]);
+    
+
 
     const getStoreInfoList = async () => {
         try {
@@ -185,8 +187,8 @@ const Main = ({ route, navigation }) => {
                 ref={mapRef}
                 style={{ flex: 1 }}
                 initialRegion={{
-                    latitude: 35.1578157,
-                    longitude: 129.0600331,
+                    latitude: latitude,
+                    longitude: longitude,
                     latitudeDelta: 0.00005,
                     longitudeDelta: 0.0028
                 }}

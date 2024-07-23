@@ -1,13 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, Text, StyleSheet, Image } from "react-native";
+import Geolocation from '@react-native-community/geolocation';
+
 
 const Splash = ({navigation}) => {
-
     useEffect(() => {
-        setTimeout(() => {
-            navigation.navigate('Main')
-        }, 2000);
-    })
+        getUserLocation()
+    }, [])
+
+    const getUserLocation = () => {
+        Geolocation.getCurrentPosition(info => {
+            console.log('Splash =========> ', info.coords.latitude, info.coords.longitude);
+            let userCurrLocation = {
+                latitude: info.coords.latitude,
+                longitude: info.coords.longitude,
+            }
+
+            if (userCurrLocation.latitude == 0 || userCurrLocation.longitude == 0) {
+                console.error('타당하지않은 주소입니다!');
+            } else {
+                setTimeout(() => {
+                    navigation.navigate('Main', { params : userCurrLocation })
+                }, 2000);
+            }
+
+            
+        })
+    }
 
     return (
         <SafeAreaView style={styles.layout}>

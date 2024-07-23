@@ -29,7 +29,7 @@ const List = ({ navigation }) => {
     const getData = async () => {
         try {
             const jsonValue = await AsyncStorage.getItem('storeInfo');
-
+            console.log(initialList);
             if (jsonValue !== null) {
                 setStoreList(JSON.parse(jsonValue));
                 setInitialList(JSON.parse(jsonValue))
@@ -55,11 +55,10 @@ const List = ({ navigation }) => {
 
     const selectTimeList = (dataList) => {
         let sortedList = [...dataList];
-        console.log(sortedList);
         sortedList.sort((a, b) => {
-            const dateA = dayjs(a.storeDate); 
+            const dateA = dayjs(a.storeDate);
             const dateB = dayjs(b.storeDate);
-            
+
             if (isNew) {
                 return dateB.diff(dateA);
             } else {
@@ -213,8 +212,9 @@ const List = ({ navigation }) => {
             <View style={styles.searchSection}>
                 <View style={styles.searchBar}>
                     <TextInput
-                        style={{ width: '80%' }}
+                        style={{ width: '80%', backgroundColor: '#fff' }}
                         placeholder="매장명을 입력하세요 !"
+                        placeholderTextColor='#DCDCDC'
                         onChangeText={(text) => setSearchContent(text)}
                     />
                     <TouchableOpacity>
@@ -236,24 +236,33 @@ const List = ({ navigation }) => {
             </View>
             <View style={styles.listOptionSectionConatainer}>
                 <View style={styles.listOptionView}>
-                    <TouchableOpacity 
-                        style={isNew == true ? styles.listOptionBtn : {paddingLeft : 4}}
+                    <TouchableOpacity
+                        style={isNew == true ? styles.listOptionBtn : { paddingLeft: 4 }}
                         onPress={() => setIsNew(true)}>
-                        <Text style={isNew == true ? styles.listOptionText : {color : '#5341e4'}}>최신순</Text>
+                        <Text style={isNew == true ? styles.listOptionText : { color: '#5341e4' }}>최신순</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={isNew == false ? styles.listOptionBtn : {paddingRight : 4}}
+                        style={isNew == false ? styles.listOptionBtn : { paddingRight: 4 }}
                         onPress={() => setIsNew(false)}>
-                        <Text style={isNew == false ? styles.listOptionText : {color : '#5341e4'}}>오래된 순</Text>
+                        <Text style={isNew == false ? styles.listOptionText : { color: '#5341e4' }}>오래된 순</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            <FlatList
-                data={storeList}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
-                showsHorizontalScrollIndicator={false}
-            />
+            {
+                initialList.length == 0 ?
+                    (
+                        <View style={{height : height*0.5, justifyContent : 'center', alignItems : 'center'}}>
+                            <Image source={listEmptyImg} style={styles.listEmptyImg} />
+                        </View>
+                    ) : (
+                        <FlatList
+                            data={storeList}
+                            renderItem={renderItem}
+                            keyExtractor={(item, index) => index.toString()}
+                            showsHorizontalScrollIndicator={false}
+                        />
+                    )
+            }
             <Modal
                 isVisible={isModalVisible}
                 style={styles.modalLayout}
@@ -328,33 +337,33 @@ const styles = StyleSheet.create({
         paddingRight: 16,
         paddingVertical: 12,
     },
-    listOptionSectionConatainer : {
-        height : 44,
+    listOptionSectionConatainer: {
+        height: 44,
         justifyContent: 'center',
         alignItems: 'flex-end',
         paddingHorizontal: 8,
     },
-    listOptionView : { 
+    listOptionView: {
         justifyContent: 'soace-between',
         alignItems: 'center',
         flexDirection: 'row',
-        borderRadius : 12,
-        borderColor : '#5341E5',
-        borderWidth : 1,
-        gap : 6,
+        borderRadius: 12,
+        borderColor: '#5341E5',
+        borderWidth: 1,
+        gap: 6,
     },
-    listOptionBtn : {
-        height : 20,
-        alignItems : 'center',
-        justifyContent : 'center',
-        backgroundColor : '#5341E5',
-        borderRadius : 12,
-        paddingHorizontal : 4,
+    listOptionBtn: {
+        height: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#5341E5',
+        borderRadius: 12,
+        paddingHorizontal: 4,
     },
-    listOptionText : {
-        color : '#fff',
-        fontWeight : '700',
-        fontSize : 14
+    listOptionText: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 14
     },
     listContentView: {
         height: '100%',
@@ -364,6 +373,10 @@ const styles = StyleSheet.create({
     listImg: {
         width: 130,
         height: 130,
+    },
+    listEmptyImg: {
+        width: 120,
+        height: 156
     },
     listDetailImg: {
         width: 60,
@@ -423,6 +436,7 @@ const starOnIcon = require('../../assets/icons/starOnIcon.png')
 const starOffIcon = require('../../assets/icons/starOffIcon.png')
 const goDetailIcon = require('../../assets/icons/goDetailIcon.png')
 const goListIcon = require('../../assets/icons/goListIcon.png')
+const listEmptyImg = require('../../assets/imgs/listEmpty.png');
 
 
 export default List;
