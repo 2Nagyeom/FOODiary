@@ -18,7 +18,7 @@ const Version = ({navigation}) => {
             </View>
             <View style={styles.container}>
                 <Text style={styles.containerText}>앱 버전</Text>
-                <Text style={styles.containerText}>2.0.4231</Text>
+                <Text style={styles.containerText}>1.0</Text>
             </View>
         </SafeAreaView>
     )

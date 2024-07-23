@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
         width: width * 0.84,
         height: height * 0.24,
         backgroundColor: '#fff',
-        paddingVertical: 16,
+        paddingTop: 16,
         paddingHorizontal: 16,
         gap: 12,
         // justifyContent : 'center',
@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
     },
     btnView: {
         width: '100%',
+        height : '40%',
         marginTop: 'auto',
         flexDirection: 'row',
         justifyContent: 'space-between',

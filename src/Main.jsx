@@ -39,6 +39,7 @@ const Main = ({ route, navigation }) => {
     const [storeMarkerList, setStoreMarkerList] = useState([]);
 
     useEffect(() => {
+        Geolocation.getCurrentPosition(info => console.log(info))
         getStoreInfoList()
     }, []);
 
@@ -108,7 +109,6 @@ const Main = ({ route, navigation }) => {
     }
 
     const onTapMap = async event => {
-        Geolocation.getCurrentPosition()
         const res = await storeGEO.REGAPI(event.latitude, event.longitude)
 
         setStoreInfo(prev => ({

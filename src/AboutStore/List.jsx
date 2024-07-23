@@ -57,7 +57,7 @@ const List = ({ navigation }) => {
         let sortedList = [...dataList];
         console.log(sortedList);
         sortedList.sort((a, b) => {
-            const dateA = dayjs(a.storeDate); // 각 항목의 날짜를 가져온다고 가정
+            const dateA = dayjs(a.storeDate); 
             const dateB = dayjs(b.storeDate);
             
             if (isNew) {
@@ -362,8 +362,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     listImg: {
-        width: 136,
-        height: 136,
+        width: 130,
+        height: 130,
     },
     listDetailImg: {
         width: 60,

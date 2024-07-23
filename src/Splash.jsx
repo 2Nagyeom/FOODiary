@@ -12,7 +12,8 @@ const Splash = ({navigation}) => {
     return (
         <SafeAreaView style={styles.layout}>
             <Image style={styles.Splashicon} source={SplashIcon} />
-            <Text style={styles.SplashText}>FOODiary</Text>
+            <Text style={styles.SplashText}>나만의 맛집저장 리스트를</Text>
+            <Text style={styles.SplashText}>만들어보아요</Text>
         </SafeAreaView>
     )
 }
@@ -20,24 +21,24 @@ const Splash = ({navigation}) => {
 const styles = StyleSheet.create({
     layout : {
         flex : 1,
-        backgroundColor : '#E8E8E7',
+        backgroundColor : '#5341e5',
         justifyContent : 'center',
         alignItems : 'center',
     },
     Splashicon : {
-        width : 280,
-        height : 280,
+        width : 164,
+        height : 184,
     },
     SplashText : {
         marginTop : 10,
-        fontSize : 30,
+        fontSize : 18,
         fontWeight : 'bold',
-        color : '#000000',
+        color : '#fff',
         textAlign : 'center'
     }
 
 })
 
-const SplashIcon = require('../assets/icons/SplashIcon.png');
+const SplashIcon = require('../assets/imgs/SplashImg.png');
 
 export default Splash;
