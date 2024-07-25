@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput } from "react-native";
+import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Alert, Linking } from "react-native";
 import { NaverMapMarkerOverlay, NaverMapView } from "@mj-studio/react-native-naver-map";
 import ImagePicker from 'react-native-image-crop-picker';
+import Geolocation from '@react-native-community/geolocation';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
@@ -12,8 +13,9 @@ import ListBtn from "../Components/MoveBtn";
 const { width, height } = Dimensions.get('screen');
 
 const Main = ({ route, navigation }) => {
-    console.log('Main ========> ', route.params.params);
-    const {latitude, longitude} = route.params.params
+    const { latitude, longitude } = route.params.params
+    console.log('Main ========> ', latitude, longitude);
+
     const { newLocation = '', showModal = false } = route.params || {}
 
     const mapRef = useRef(null);
@@ -22,6 +24,7 @@ const Main = ({ route, navigation }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [date, setDate] = useState(new Date())
     const [saveLocation, setSaveLocation] = useState('');
+    const [storeMarkerList, setStoreMarkerList] = useState([]);
     const [storeInfo, setStoreInfo] = useState({
         storeGPS: {
             latitude: 0,
@@ -37,16 +40,21 @@ const Main = ({ route, navigation }) => {
         storeImage: [],
         storeStar: 'YES'
     })
-    const [storeMarkerList, setStoreMarkerList] = useState([]);
+    const [region, setRegion] = useState({
+        latitude: latitude !== 0 ? latitude : 35.179816,
+        longitude: longitude !== 0 ? longitude : 129.075022,
+        latitudeDelta: 0.00005,
+        longitudeDelta: 0.0028,
+    });
 
     useEffect(() => {
         getStoreInfoList()
-    }, [storeMarkerList]);
-    
+    }, []);
+
     useEffect(() => {
         isKeepModal()
     }, [showModal, newLocation]);
-    
+
 
 
     const getStoreInfoList = async () => {
@@ -111,18 +119,48 @@ const Main = ({ route, navigation }) => {
     }
 
     const onTapMap = async event => {
-        const res = await storeGEO.REGAPI(event.latitude, event.longitude)
+        if (region.latitude == 35.179816 && region.longitude == 129.075022) {
+            handlePermissionDenied()
+        } else {
+            const res = await storeGEO.REGAPI(event.latitude, event.longitude)
 
-        setStoreInfo(prev => ({
-            ...prev,
-            storeGPS: {
-                latitude: event.latitude,
-                longitude: event.longitude,
-            },
-            mainLocation: res,
-        }))
-        setIsModalVisible(true);
+            setStoreInfo(prev => ({
+                ...prev,
+                storeGPS: {
+                    latitude: event.latitude,
+                    longitude: event.longitude,
+                },
+                mainLocation: res,
+            }))
+            // setIsModalVisible(true);
+        }
     }
+
+    const handlePermissionDenied = () => {
+        Alert.alert(
+            '위치 권한 필요',
+            '위치 권한이 필요합니다. 설정에서 권한을 허용해주세요.',
+            [
+                {
+                    text: '취소',
+                    style: 'cancel',
+                },
+                {
+                    text: '설정', 
+                    onPress: () => {
+                        // Android 설정으로 이동
+                        if (Platform.OS === 'android') {
+                            Linking.openSettings();
+                        } else {
+                            // iOS 설정으로 이동
+                            Linking.openURL('app-settings:');
+                        }
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
+    };
 
 
     const getMarkerInfo = (storeOption, storeState) => {
@@ -186,12 +224,13 @@ const Main = ({ route, navigation }) => {
             <NaverMapView
                 ref={mapRef}
                 style={{ flex: 1 }}
-                initialRegion={{
-                    latitude: latitude,
-                    longitude: longitude,
-                    latitudeDelta: 0.00005,
-                    longitudeDelta: 0.0028
-                }}
+                region={region}
+                // initialRegion={{
+                //     latitude: latitude == 0 ? 35.179816 : latitude,
+                //     longitude: longitude == 0 ? 129.075022 : longitude,
+                //     latitudeDelta: 0.00005,
+                //     longitudeDelta: 0.0028
+                // }}
                 isShowLocationButton={true}
                 isIndoorEnabled={true}
 

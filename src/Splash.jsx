@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, Text, StyleSheet, Image } from "react-native";
+import { SafeAreaView, Text, StyleSheet, Image, PermissionsAndroid, Platform } from "react-native";
 import Geolocation from '@react-native-community/geolocation';
 
 
-const Splash = ({navigation}) => {
+const Splash = ({ navigation }) => {
+
+    const [initalLocation, setInitalLocation] = useState({
+        latitude : 0,
+        longitude : 0,
+    })
     useEffect(() => {
-        getUserLocation()
+        requestLocationPermission()
     }, [])
 
     const getUserLocation = () => {
@@ -15,18 +20,39 @@ const Splash = ({navigation}) => {
                 latitude: info.coords.latitude,
                 longitude: info.coords.longitude,
             }
-
-            if (userCurrLocation.latitude == 0 || userCurrLocation.longitude == 0) {
-                console.error('타당하지않은 주소입니다!');
-            } else {
-                setTimeout(() => {
-                    navigation.navigate('Main', { params : userCurrLocation })
-                }, 2000);
-            }
-
-            
         })
     }
+
+    const requestLocationPermission = async () => {
+        if (Platform.OS === 'android') {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            );
+
+            Geolocation.getCurrentPosition(info => {
+                console.log('Splash =========> ', info.coords.latitude, info.coords.longitude);
+                let userCurrLocation = {
+                    latitude: info.coords.latitude,
+                    longitude: info.coords.longitude,
+                }
+                setInitalLocation(userCurrLocation)
+            })
+            // 권한이 허용되었는지 확인
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+
+                console.log('Location permission granted');
+            } else {
+                // 권한이 거부된 경우
+                console.log('Location permission denied');
+            }
+        }
+
+        setTimeout(() => {
+            navigation.navigate('Main', { params: initalLocation })
+            console.log(initalLocation);
+        }, 2000);
+    }
+
 
     return (
         <SafeAreaView style={styles.layout}>
@@ -38,22 +64,22 @@ const Splash = ({navigation}) => {
 }
 
 const styles = StyleSheet.create({
-    layout : {
-        flex : 1,
-        backgroundColor : '#5341e5',
-        justifyContent : 'center',
-        alignItems : 'center',
+    layout: {
+        flex: 1,
+        backgroundColor: '#5341e5',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    Splashicon : {
-        width : 164,
-        height : 184,
+    Splashicon: {
+        width: 164,
+        height: 184,
     },
-    SplashText : {
-        marginTop : 10,
-        fontSize : 18,
-        fontWeight : 'bold',
-        color : '#fff',
-        textAlign : 'center'
+    SplashText: {
+        marginTop: 10,
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#fff',
+        textAlign: 'center'
     }
 
 })
