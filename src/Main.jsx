@@ -1,24 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Alert, Linking } from "react-native";
+import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Alert, Linking, useWindowDimensions } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { NaverMapMarkerOverlay, NaverMapView } from "@mj-studio/react-native-naver-map";
 import ImagePicker from 'react-native-image-crop-picker';
-import Geolocation from '@react-native-community/geolocation';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
 
 import storeGEO from "../APIs/storeGEO";
 import ListBtn from "../Components/MoveBtn";
+import { getCurrLocation } from "../hooks/asyncStore";
 
 const { width, height } = Dimensions.get('screen');
 
 const Main = ({ route, navigation }) => {
-    const { latitude, longitude } = route.params.params
-    console.log('Main ========> ', latitude, longitude);
 
     const { newLocation = '', showModal = false } = route.params || {}
-
-    const mapRef = useRef(null);
+    const [initialLocation, setInitalLocation] = useState(undefined)
+    const isFocused = useIsFocused();
+    const mapRef = useRef(null);   
     const scrollViewRef = useRef(null);
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -41,21 +41,26 @@ const Main = ({ route, navigation }) => {
         storeStar: 'YES'
     })
     const [region, setRegion] = useState({
-        latitude: latitude !== 0 ? latitude : 35.179816,
-        longitude: longitude !== 0 ? longitude : 129.075022,
+        latitude : 35.179816,
+        longitude : 129.075022,
         latitudeDelta: 0.00005,
         longitudeDelta: 0.0028,
     });
 
     useEffect(() => {
+        stackInitialLocation()
         getStoreInfoList()
-    }, []);
+    }, [isFocused]);
 
     useEffect(() => {
         isKeepModal()
     }, [showModal, newLocation]);
 
 
+    const stackInitialLocation = async () => {
+        const res = await getCurrLocation()
+        setInitalLocation(res)        
+    }
 
     const getStoreInfoList = async () => {
         try {
@@ -119,11 +124,11 @@ const Main = ({ route, navigation }) => {
     }
 
     const onTapMap = async event => {
-        if (region.latitude == 35.179816 && region.longitude == 129.075022) {
+        if (!initialLocation) {
             handlePermissionDenied()
         } else {
             const res = await storeGEO.REGAPI(event.latitude, event.longitude)
-
+    
             setStoreInfo(prev => ({
                 ...prev,
                 storeGPS: {
@@ -132,7 +137,7 @@ const Main = ({ route, navigation }) => {
                 },
                 mainLocation: res,
             }))
-            // setIsModalVisible(true);
+            setIsModalVisible(true);
         }
     }
 

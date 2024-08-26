@@ -1,58 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, Text, StyleSheet, Image, PermissionsAndroid, Platform } from "react-native";
-import Geolocation from '@react-native-community/geolocation';
-
+import Geolocation from 'react-native-geolocation-service';
+import { saveCurrLocation } from "../hooks/asyncStore";
 
 const Splash = ({ navigation }) => {
 
-    const [initalLocation, setInitalLocation] = useState({
-        latitude : 0,
-        longitude : 0,
-    })
     useEffect(() => {
-        requestLocationPermission()
+        getUserLocation()
     }, [])
 
-    const getUserLocation = () => {
-        Geolocation.getCurrentPosition(info => {
-            console.log('Splash =========> ', info.coords.latitude, info.coords.longitude);
-            let userCurrLocation = {
-                latitude: info.coords.latitude,
-                longitude: info.coords.longitude,
-            }
-        })
-    }
+    const getUserLocation = async () => {
+        const hasPermission = await requestLocationPermission();
+        
+        if (hasPermission) {
+            Geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    let location = {
+                        latitude,
+                        longitude
+                    }
+                    saveCurrLocation(JSON.stringify(location))
+                    console.log('현재 위치 =======> ', { latitude, longitude });
+                },
+                (error) => {
+                    console.log(error.code, error.message);
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 1500,
+                    maximumAge: 1000
+                }
+            );
+        } else {
+            console.log('위치 권한이 거부되었습니다.');
+        }
+        setTimeout(() => {
+            navigation.navigate('Main')
+        }, 2000)
+    };
 
     const requestLocationPermission = async () => {
         if (Platform.OS === 'android') {
             const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: '위치 권한 요청',
+                    message: '위치 정보를 사용하기 위해 권한이 필요합니다.',
+                    buttonNeutral: '나중에',
+                    buttonNegative: '취소',
+                    buttonPositive: '확인',
+                },
             );
-
-            Geolocation.getCurrentPosition(info => {
-                console.log('Splash =========> ', info.coords.latitude, info.coords.longitude);
-                let userCurrLocation = {
-                    latitude: info.coords.latitude,
-                    longitude: info.coords.longitude,
-                }
-                setInitalLocation(userCurrLocation)
-            })
-            // 권한이 허용되었는지 확인
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-
-                console.log('Location permission granted');
-            } else {
-                // 권한이 거부된 경우
-                console.log('Location permission denied');
-            }
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } if (Platform.OS === "ios") {
+            return await Geolocation.requestAuthorization("always");
         }
-
-        setTimeout(() => {
-            navigation.navigate('Main', { params: initalLocation })
-            console.log(initalLocation);
-        }, 2000);
-    }
-
+    };
 
     return (
         <SafeAreaView style={styles.layout}>
