@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Alert, Linking, useWindowDimensions } from "react-native";
-import { useIsFocused } from "@react-navigation/native";
 import { NaverMapMarkerOverlay, NaverMapView } from "@mj-studio/react-native-naver-map";
 import ImagePicker from 'react-native-image-crop-picker';
 import DatePicker from 'react-native-date-picker'
@@ -17,8 +16,7 @@ const Main = ({ route, navigation }) => {
 
     const { newLocation = '', showModal = false } = route.params || {}
     const [initialLocation, setInitalLocation] = useState(undefined)
-    const isFocused = useIsFocused();
-    const mapRef = useRef(null);   
+    const mapRef = useRef(null);
     const scrollViewRef = useRef(null);
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -41,8 +39,8 @@ const Main = ({ route, navigation }) => {
         storeStar: 'YES'
     })
     const [region, setRegion] = useState({
-        latitude : 35.179816,
-        longitude : 129.075022,
+        latitude: 35.179816,
+        longitude: 129.075022,
         latitudeDelta: 0.00005,
         longitudeDelta: 0.0028,
     });
@@ -50,7 +48,7 @@ const Main = ({ route, navigation }) => {
     useEffect(() => {
         stackInitialLocation()
         getStoreInfoList()
-    }, [isFocused]);
+    }, []);
 
     useEffect(() => {
         isKeepModal()
@@ -59,7 +57,7 @@ const Main = ({ route, navigation }) => {
 
     const stackInitialLocation = async () => {
         const res = await getCurrLocation()
-        setInitalLocation(res)        
+        setInitalLocation(res)
     }
 
     const getStoreInfoList = async () => {
@@ -128,7 +126,7 @@ const Main = ({ route, navigation }) => {
             handlePermissionDenied()
         } else {
             const res = await storeGEO.REGAPI(event.latitude, event.longitude)
-    
+
             setStoreInfo(prev => ({
                 ...prev,
                 storeGPS: {
@@ -151,7 +149,7 @@ const Main = ({ route, navigation }) => {
                     style: 'cancel',
                 },
                 {
-                    text: '설정', 
+                    text: '설정',
                     onPress: () => {
                         // Android 설정으로 이동
                         if (Platform.OS === 'android') {
@@ -218,6 +216,20 @@ const Main = ({ route, navigation }) => {
                 storeImage: (images.map(v => v.sourceURL))
             }))
         });
+    }
+
+    const onTakeImg = () => {
+        ImagePicker.openCamera({
+            width: 300,
+            height: 300,
+            cropping: true,
+            includeBase64 : true
+        }).then(images => {
+                setStoreInfo(prev => ({
+                    ...prev,
+                    storeImage: `data:${images.mime};base64,${images.data}`}))
+                })
+        ;
     }
 
     const goToList = () => {
@@ -423,7 +435,7 @@ const Main = ({ route, navigation }) => {
                                             <ScrollView
                                                 showsHorizontalScrollIndicator={false}
                                                 horizontal={true}>
-                                                {storeInfo.storeImage.map(v => (<Image source={{ uri: v }} style={{ width: 100, height: 100, borderRadius: 8, marginRight: 4 }} />))}
+                                                <Image source={{ uri: storeInfo.storeImage }} style={{ width: 100, height: 100, borderRadius: 8, marginRight: 4 }} />
                                             </ScrollView>
                                             <TouchableOpacity
                                                 onPress={() => onPickImg()}>
@@ -431,10 +443,16 @@ const Main = ({ route, navigation }) => {
                                             </TouchableOpacity>
                                         </>
                                     ) : (
-                                        <TouchableOpacity
-                                            onPress={() => onPickImg()}>
-                                            <Text style={[styles.text, { marginLeft: 20, color: '#A5A5A7' }]}>사진 등록하기...</Text>
-                                        </TouchableOpacity>
+                                        <View>
+                                            {/* <TouchableOpacity
+                                                onPress={() => onPickImg()}>
+                                                <Text style={[styles.text, { marginLeft: 20, color: '#A5A5A7' }]}>사진 등록하기...</Text>
+                                            </TouchableOpacity> */}
+                                            <TouchableOpacity
+                                                onPress={() => onTakeImg()}>
+                                                <Text style={[styles.text, { marginLeft: 20, color: '#A5A5A7' }]}>촬영하기...</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     )
                                 }
                             </View>
