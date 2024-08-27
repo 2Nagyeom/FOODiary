@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, Text, StyleSheet, Image, PermissionsAndroid, Platform } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
+
 import Geolocation from 'react-native-geolocation-service';
 import { saveCurrLocation } from "../hooks/asyncStore";
 
 const Splash = ({ navigation }) => {
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         getUserLocation()
-    }, [])
+    }, [isFocused])
 
     const getUserLocation = async () => {
         const hasPermission = await requestLocationPermission();
