@@ -58,6 +58,7 @@ const Main = ({ route, navigation }) => {
     const stackInitialLocation = async () => {
         const res = await getCurrLocation()
         setInitalLocation(res)
+        
     }
 
     const getStoreInfoList = async () => {

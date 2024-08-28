@@ -51,7 +51,7 @@ const Router = () => {
                 <Stack.Screen name='Splash' component={Splash} />
                 <Stack.Screen name='Main' component={Main} />
                 <Stack.Screen name='BottomTab' component={BottomTab} />
-                <Stack.Screen name='Detail' component={Detail} />
+                {/* <Stack.Screen name='Detail' component={Detail} /> */}
                 <Stack.Screen name='Version' component={Version} />
             </Stack.Navigator>
         </>

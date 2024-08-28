@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { SafeAreaView, ScrollView, TextInput, View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from "react-native";
 import ImagePicker from 'react-native-image-crop-picker';
-import DatePicker from 'react-native-date-picker'
+// import DatePicker from 'react-native-date-picker'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
@@ -107,7 +107,7 @@ const Detail = ({navigation, route}) => {
                                     </View>
                                 </View>
                             </View>
-                            <View style={[styles.gapView, { height: 240 }]}>
+                            {/* <View style={[styles.gapView, { height: 240 }]}>
                                 <Text style={styles.text}>매장에 간 날짜를 선택해주세요!</Text>
                                 <View style={styles.datePickerContainer}>
                                     <DatePicker
@@ -117,7 +117,7 @@ const Detail = ({navigation, route}) => {
                                         locale='kor'
                                         onDateChange={setDate} />
                                 </View>
-                            </View>
+                            </View> */}
                             <View style={styles.gapView}>
                                 <Text style={styles.text}>매장의 유형을 선택해주세요!</Text>
                                 <View style={{ alignItems: 'center', flexDirection: 'row', gap: 16 }}>
