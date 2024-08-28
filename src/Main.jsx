@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Dimensions, View, Image, Text, TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, TextInput, Alert, Linking, useWindowDimensions } from "react-native";
 import { NaverMapMarkerOverlay, NaverMapView } from "@mj-studio/react-native-naver-map";
 import ImagePicker from 'react-native-image-crop-picker';
-import DatePicker from 'react-native-date-picker'
+import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from "react-native-modal";
 
@@ -207,6 +207,10 @@ const Main = ({ route, navigation }) => {
         }))
     }
 
+    const onChangeDate = (event, selectedDate) => {
+        if (selectedDate) setDate(selectedDate)
+    }
+
     const onPickImg = () => {
         ImagePicker.openPicker({
             multiple: true
@@ -223,13 +227,14 @@ const Main = ({ route, navigation }) => {
             width: 300,
             height: 300,
             cropping: true,
-            includeBase64 : true
+            includeBase64: true
         }).then(images => {
-                setStoreInfo(prev => ({
-                    ...prev,
-                    storeImage: `data:${images.mime};base64,${images.data}`}))
-                })
-        ;
+            setStoreInfo(prev => ({
+                ...prev,
+                storeImage: `data:${images.mime};base64,${images.data}`
+            }))
+        })
+            ;
     }
 
     const goToList = () => {
@@ -336,15 +341,19 @@ const Main = ({ route, navigation }) => {
                                     </View>
                                 </View>
                             </View>
-                            <View style={[styles.gapView, { height: 240 }]}>
+                            <View style={[styles.gapView, { backgroundColor: '#ffff' }]}>
                                 <Text style={styles.text}>매장에 간 날짜를 선택해주세요!</Text>
-                                <View style={styles.datePickerContainer}>
-                                    <DatePicker
-                                        date={date}
-                                        minuteInterval={5}
-                                        locale='kor'
-                                        onDateChange={setDate} />
-                                </View>
+                                <DateTimePicker
+                                    value={date}
+                                    mode='datetime'
+                                    display="spinner"
+                                    onChange={onChangeDate}
+                                    minuteInterval={5}
+                                    maximumDate={new Date()}
+                                    timeZoneName={'Asia/Seoul'}
+                                    is24Hour={true}
+                                    textColor="black"
+                                />
                             </View>
                             <View style={styles.gapView}>
                                 <Text style={styles.text}>매장의 유형을 선택해주세요!</Text>
@@ -439,7 +448,7 @@ const Main = ({ route, navigation }) => {
                                             </ScrollView>
                                             <TouchableOpacity
                                                 onPress={() => onPickImg()}>
-                                                <Text style={[styles.text, { fontWeight: '700', color: '#5341E5' }]}>사진 다시 고르기</Text>
+                                                <Text style={[styles.text, { fontWeight: '700', color: '#5341E5' }]}>사진 다시 찍기</Text>
                                             </TouchableOpacity>
                                         </>
                                     ) : (
